@@ -4,22 +4,24 @@ from abc import ABC, abstractmethod
 from cabinets.logger import error, info
 from cabinets.parser import Parser
 
+_SUPPORTED_PROTOCOLS = {}
+
+
+def register_protocols(*protocols):
+    def decorate_cabinet(cabinet: Cabinet):
+        for protocol in protocols:
+            _SUPPORTED_PROTOCOLS[protocol] = cabinet
+        return cabinet
+
+    return decorate_cabinet
+
 
 class Cabinet(ABC):
-    @classmethod
-    def _get_subclasses(cls):
-        subs: {str: Cabinet} = {}
-        for subcls in cls.__subclasses__():
-            protocol = subcls.__name__.removesuffix('Cabinet').lower()
-            subs[protocol] = subcls
-            subs.update(subcls._get_subclasses())
-        return subs
 
     @classmethod
     def from_uri(cls, uri):
         protocol, path = uri.split('://')
-        cabinets = cls._get_subclasses()
-        cabinet = cabinets.get(protocol)
+        cabinet = _SUPPORTED_PROTOCOLS.get(protocol)
         return cabinet, path
 
     @classmethod
@@ -59,6 +61,7 @@ class Cabinet(ABC):
         pass
 
 
+@register_protocols('s3')
 class S3Cabinet(Cabinet):
     # client = boto3.client('s3', region_name=NotImplemented)
     client = None
@@ -88,6 +91,7 @@ class S3Cabinet(Cabinet):
             return False
 
 
+@register_protocols('file')
 class FileCabinet(Cabinet):
     @classmethod
     def _read_content(cls, path):
