@@ -4,6 +4,7 @@ tests_require = [
     'flake8',
     'coverage',
     'moto==1.3.14',
+    'pyfakefs',
     'pytest',
     'pytest-cov'
 ]

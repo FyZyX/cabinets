@@ -3,23 +3,31 @@ import os
 import unittest
 
 from cabinets.cabinet import Cabinet
+from pyfakefs import fake_filesystem_unittest
 
 
-class TestCabinet(unittest.TestCase):
+class TestCabinet(fake_filesystem_unittest.TestCase):
+    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
+
+    def setUp(self):
+        self.setUpPyfakefs()
+        self.fs.add_real_directory(self.fixture_path)
+
     def test_read_json(self):
-        protocol, filename = 'file', 'fixtures/sample.json'
+        protocol = 'file'
+        filename = os.path.join(self.fixture_path, 'sample.json')
         data = Cabinet.read(f'{protocol}://{filename}')
         self.assertEqual({'hello': 'world'}, data)
 
     def test_create_json(self):
-        protocol, filename = 'file', 'fixtures/sample.json'
+        protocol, filename = 'file', 'tmp/sample.json'
         Cabinet.create(f'{protocol}://{filename}', {'hello': 'world'})
         with open(filename) as fh:
             data = json.load(fh)
         self.assertEqual({'hello': 'world'}, data)
 
     def test_delete(self):
-        protocol, filename = 'file', 'fixtures/delete-me.json'
+        protocol, filename = 'file', 'delete-me.json'
         data = {'hello': 'world'}
         with open(filename, 'w') as fh:
             json.dump(data, fh)
