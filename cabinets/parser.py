@@ -1,5 +1,6 @@
 import csv
 import json
+import pickle
 from abc import ABC, abstractmethod
 from io import StringIO
 
@@ -40,16 +41,26 @@ class Parser(ABC):
         pass
 
 
+@register_extensions('pickle')
+class PickleParser(Parser):
+
+    @classmethod
+    def load_content(cls, content):
+        return pickle.loads(content)
+
+    @classmethod
+    def dump_content(cls, content):
+        return pickle.dumps(content)
+
+
 @register_extensions('json')
 class JSONParser(Parser):
 
     @classmethod
-    @abstractmethod
     def load_content(cls, content):
         return json.loads(content)
 
     @classmethod
-    @abstractmethod
     def dump_content(cls, content):
         return json.dumps(content)
 
@@ -58,12 +69,10 @@ class JSONParser(Parser):
 class YAMLParser(Parser):
 
     @classmethod
-    @abstractmethod
     def load_content(cls, content):
         return yaml.safe_load(content)
 
     @classmethod
-    @abstractmethod
     def dump_content(cls, content):
         return yaml.safe_dump(content)
 
@@ -72,12 +81,10 @@ class YAMLParser(Parser):
 class CSVParser(Parser):
 
     @classmethod
-    @abstractmethod
     def load_content(cls, content):
         return list(csv.reader(content.splitlines()))
 
     @classmethod
-    @abstractmethod
     def dump_content(cls, content):
         csv_buffer = StringIO()
         if type(content[0]) == dict:

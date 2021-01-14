@@ -95,14 +95,16 @@ class S3Cabinet(Cabinet):
 class FileCabinet(Cabinet):
     @classmethod
     def _read_content(cls, path):
-        with open(os.path.normpath(path)) as file:
+        # TODO: Investigate if binary read mode is always okay
+        with open(os.path.normpath(path), 'rb') as file:
             return file.read()
 
     @classmethod
     def _create_content(cls, path, content):
         if dirs := os.path.dirname(os.path.normpath(path)):
             os.makedirs(dirs, exist_ok=True)
-        with open(os.path.normpath(path), 'w') as file:
+        mode = 'w' if isinstance(content, str) else 'wb'
+        with open(os.path.normpath(path), mode) as file:
             file.write(content)
 
     @classmethod

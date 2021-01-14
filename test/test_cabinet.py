@@ -1,6 +1,7 @@
 import json
 import os
 import unittest
+from types import SimpleNamespace
 
 from cabinets.cabinet import Cabinet
 from pyfakefs import fake_filesystem_unittest
@@ -45,6 +46,14 @@ class TestCabinet(fake_filesystem_unittest.TestCase):
     def test_read_create_yaml(self):
         protocol, filename = 'file', 'test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
+        Cabinet.create(f'{protocol}://{filename}', data)
+        result = Cabinet.read(f'{protocol}://{filename}')
+        self.assertDictEqual(data, result)
+
+    def test_read_create_pickle(self):
+        protocol, filename = 'file', 'test.pickle'
+        data = {'I': {'am': ['nested', 1 + 2j, 'object', None],
+                      'purple': SimpleNamespace(egg=True, fish=42)}}
         Cabinet.create(f'{protocol}://{filename}', data)
         result = Cabinet.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
