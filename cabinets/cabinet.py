@@ -26,26 +26,36 @@ class Cabinet(ABC):
     def read(cls, uri, raw=False):
         cabinet, path = cls.from_uri(uri)
         if raw:
-            return cabinet.get_content(path)
+            return cabinet._read_content(path)
         else:
-            return Parser.load(path, cabinet.get_content(path))
+            return Parser.load(path, cabinet._read_content(path))
 
     @classmethod
-    def write(cls, uri, content, raw=False):
+    def create(cls, uri, content, raw=False):
         cabinet, path = cls.from_uri(uri)
         if raw:
-            return cabinet.put_content(path, content)
+            return cabinet._create_content(path, content)
         else:
-            return cabinet.put_content(path, Parser.dump(path, content))
+            return cabinet._create_content(path, Parser.dump(path, content))
+
+    @classmethod
+    def delete(cls, uri):
+        cabinet, path = cls.from_uri(uri)
+        cabinet._delete_content(path)
 
     @classmethod
     @abstractmethod
-    def get_content(cls, path):
+    def _read_content(cls, path):
         pass
 
     @classmethod
     @abstractmethod
-    def put_content(cls, path, content):
+    def _create_content(cls, path, content):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def _delete_content(cls, path):
         pass
 
 
@@ -54,19 +64,19 @@ class S3Cabinet(Cabinet):
     client = None
 
     @classmethod
-    def get_content(cls, path):
+    def _read_content(cls, path):
         bucket, *key = path.split('/')
         key = '/'.join(key)
         info(f'Downloading {key} from Bucket {bucket}')
         try:
             resp = cls.client.get_object(Bucket=bucket, Key=key)
-            return resp.get_content('Body').read()
+            return resp._read_content('Body').read()
         except Exception as ex:
             error(f"Cannot download {path} from S3 Bucket '{bucket}': {ex}")
             return None
 
     @classmethod
-    def put_content(cls, path, content):
+    def _create_content(cls, path, content):
         bucket, *key = path.split('/')
         key = '/'.join(key)
         info(f"Uploading {key} to {bucket}")
@@ -80,12 +90,17 @@ class S3Cabinet(Cabinet):
 
 class FileCabinet(Cabinet):
     @classmethod
-    def get_content(cls, path):
+    def _read_content(cls, path):
         with open(os.path.normpath(path)) as file:
             return file.read()
 
     @classmethod
-    def put_content(cls, path, content):
-        os.makedirs(os.path.dirname(os.path.normpath(path)), exist_ok=True)
+    def _create_content(cls, path, content):
+        if dirs := os.path.dirname(os.path.normpath(path)):
+            os.makedirs(dirs, exist_ok=True)
         with open(os.path.normpath(path), 'w') as file:
             file.write(content)
+
+    @classmethod
+    def _delete_content(cls, path):
+        os.remove(os.path.normpath(path))
