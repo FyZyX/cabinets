@@ -1,3 +1,3 @@
-from .cabinet import CabinetBase
+from .cabinet import CabinetInterface
 
-__all__ = (CabinetBase,)
+__all__ = (CabinetInterface,)

@@ -10,7 +10,7 @@ _SUPPORTED_PROTOCOLS = {}
 
 
 def register_protocols(*protocols):
-    def decorate_cabinet(cabinet: CabinetBase):
+    def decorate_cabinet(cabinet: CabinetInterface):
         for protocol in protocols:
             _SUPPORTED_PROTOCOLS[protocol] = cabinet
         return cabinet
@@ -42,7 +42,7 @@ class Cabinet:
         return cabinet.delete(path)
 
 
-class CabinetBase(ABC):
+class CabinetInterface(ABC):
 
     @classmethod
     @abstractmethod
@@ -84,7 +84,7 @@ class CabinetBase(ABC):
 
 
 @register_protocols('s3')
-class S3Cabinet(CabinetBase):
+class S3Cabinet(CabinetInterface):
     client = None
 
     @classmethod
@@ -135,7 +135,7 @@ class S3Cabinet(CabinetBase):
 
 
 @register_protocols('file')
-class FileCabinet(CabinetBase):
+class FileCabinet(CabinetInterface):
     @classmethod
     def _read_content(cls, path) -> bytes:
         # TODO: Investigate if binary read mode is always okay
