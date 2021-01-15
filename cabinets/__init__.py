@@ -1,3 +1,3 @@
-from cabinet import Cabinet
+from .cabinet import Cabinet
 
 __all__ = (Cabinet,)
