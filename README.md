@@ -121,6 +121,5 @@ S3Cabinet.set_configuration(region_name='us-west-2')
 S3Cabinet.read('bucket-us-west-2/test.json')
 # or
 Cabinets.read('s3://bucket-us-west-2/test.json')
-
 ```
 
