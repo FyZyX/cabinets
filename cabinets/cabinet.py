@@ -129,7 +129,8 @@ class FileCabinet(Cabinet):
 
     @classmethod
     def _create_content(cls, path, content):
-        if dirs := os.path.dirname(os.path.normpath(path)):
+        dirs = os.path.dirname(os.path.normpath(path))
+        if dirs:
             os.makedirs(dirs, exist_ok=True)
         mode = 'w' if isinstance(content, str) else 'wb'
         with open(os.path.normpath(path), mode) as file:
