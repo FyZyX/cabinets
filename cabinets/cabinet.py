@@ -10,7 +10,7 @@ _SUPPORTED_PROTOCOLS = {}
 
 
 def register_protocols(*protocols):
-    def decorate_cabinet(cabinet: Cabinet):
+    def decorate_cabinet(cabinet: CabinetBase):
         for protocol in protocols:
             _SUPPORTED_PROTOCOLS[protocol] = cabinet
         return cabinet
@@ -18,12 +18,7 @@ def register_protocols(*protocols):
     return decorate_cabinet
 
 
-class Cabinet(ABC):
-
-    @classmethod
-    @abstractmethod
-    def set_configuration(cls, **kwargs):
-        pass
+class Cabinet:
 
     @classmethod
     def from_uri(cls, uri):
@@ -34,23 +29,43 @@ class Cabinet(ABC):
     @classmethod
     def read(cls, uri, raw=False) -> bytes:
         cabinet, path = cls.from_uri(uri)
-        if raw:
-            return cabinet._read_content(path)
-        else:
-            return Parser.load(path, cabinet._read_content(path))
+        return cabinet.read(path, raw=raw)
 
     @classmethod
     def create(cls, uri, content, raw=False):
         cabinet, path = cls.from_uri(uri)
-        if raw:
-            return cabinet._create_content(path, content)
-        else:
-            return cabinet._create_content(path, Parser.dump(path, content))
+        return cabinet.read(path, content, raw=raw)
 
     @classmethod
     def delete(cls, uri):
         cabinet, path = cls.from_uri(uri)
-        cabinet._delete_content(path)
+        return cabinet.delete(path)
+
+
+class CabinetBase(ABC):
+
+    @classmethod
+    @abstractmethod
+    def set_configuration(cls, **kwargs):
+        pass
+
+    @classmethod
+    def read(cls, path, raw=False) -> bytes:
+        if raw:
+            return cls._read_content(path)
+        else:
+            return Parser.load(path, cls._read_content(path))
+
+    @classmethod
+    def create(cls, path, content, raw=False):
+        if raw:
+            return cls._create_content(path, content)
+        else:
+            return cls._create_content(path, Parser.dump(path, content))
+
+    @classmethod
+    def delete(cls, path):
+        cls._delete_content(path)
 
     @classmethod
     @abstractmethod
@@ -69,7 +84,7 @@ class Cabinet(ABC):
 
 
 @register_protocols('s3')
-class S3Cabinet(Cabinet):
+class S3Cabinet(CabinetBase):
     client = None
 
     @classmethod
@@ -120,7 +135,7 @@ class S3Cabinet(Cabinet):
 
 
 @register_protocols('file')
-class FileCabinet(Cabinet):
+class FileCabinet(CabinetBase):
     @classmethod
     def _read_content(cls, path) -> bytes:
         # TODO: Investigate if binary read mode is always okay
