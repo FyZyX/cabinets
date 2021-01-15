@@ -10,7 +10,7 @@ _SUPPORTED_PROTOCOLS = {}
 
 
 def register_protocols(*protocols):
-    def decorate_cabinet(cabinet: CabinetInterface):
+    def decorate_cabinet(cabinet: CabinetBase):
         for protocol in protocols:
             _SUPPORTED_PROTOCOLS[protocol] = cabinet
         return cabinet
@@ -18,31 +18,7 @@ def register_protocols(*protocols):
     return decorate_cabinet
 
 
-class Cabinet:
-
-    @classmethod
-    def from_uri(cls, uri):
-        protocol, path = uri.split('://')
-        cabinet = _SUPPORTED_PROTOCOLS.get(protocol)
-        return cabinet, path
-
-    @classmethod
-    def read(cls, uri, raw=False):
-        cabinet, path = cls.from_uri(uri)
-        return cabinet.read(path, raw=raw)
-
-    @classmethod
-    def create(cls, uri, content, raw=False):
-        cabinet, path = cls.from_uri(uri)
-        return cabinet.read(path, content, raw=raw)
-
-    @classmethod
-    def delete(cls, uri):
-        cabinet, path = cls.from_uri(uri)
-        return cabinet.delete(path)
-
-
-class CabinetInterface(ABC):
+class CabinetBase(ABC):
 
     @classmethod
     @abstractmethod
@@ -84,7 +60,7 @@ class CabinetInterface(ABC):
 
 
 @register_protocols('s3')
-class S3Cabinet(CabinetInterface):
+class S3Cabinet(CabinetBase):
     client = None
 
     @classmethod
@@ -135,7 +111,7 @@ class S3Cabinet(CabinetInterface):
 
 
 @register_protocols('file')
-class FileCabinet(CabinetInterface):
+class FileCabinet(CabinetBase):
     @classmethod
     def _read_content(cls, path) -> bytes:
         # TODO: Investigate if binary read mode is always okay
@@ -154,3 +130,27 @@ class FileCabinet(CabinetInterface):
     @classmethod
     def _delete_content(cls, path):
         os.remove(os.path.normpath(path))
+
+
+class Cabinets:
+
+    @classmethod
+    def from_uri(cls, uri) -> (CabinetBase, str):
+        protocol, path = uri.split('://')
+        cabinet = _SUPPORTED_PROTOCOLS.get(protocol)
+        return cabinet, path
+
+    @classmethod
+    def read(cls, uri, raw=False):
+        cabinet, path = cls.from_uri(uri)
+        return cabinet.read(path, raw=raw)
+
+    @classmethod
+    def create(cls, uri, content, raw=False):
+        cabinet, path = cls.from_uri(uri)
+        return cabinet.read(path, content, raw=raw)
+
+    @classmethod
+    def delete(cls, uri):
+        cabinet, path = cls.from_uri(uri)
+        return cabinet.delete(path)

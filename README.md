@@ -25,9 +25,9 @@ with open('data.json', 'w') as fh:
 Read back and parse the file using `cabinets`:
 
 ```python
-from cabinets import CabinetInterface
+from cabinets import Cabinets
 
-new_obj = CabinetInterface.read('file://test.json')
+new_obj = Cabinets.read('file://test.json')
 
 assert new_obj == obj
 ```
@@ -40,13 +40,13 @@ That's it! The file is *loaded* and *parsed* in just one line.
 only `cabinets`.
 
 ```python
-from cabinets import CabinetInterface
+from cabinets import Cabinets
 
 obj = {'test': 1}
 
-CabinetInterface.create('file://test.json', obj)
+Cabinets.create('file://test.json', obj)
 
-new_obj = CabinetInterface.read('file://test.json')
+new_obj = Cabinets.read('file://test.json')
 
 assert new_obj == obj
 ```
@@ -97,13 +97,13 @@ class FooParser(Parser):
 Then to load a `test.foo` file you can simply use `Cabinet.read`
 
 ```python
-from cabinets import CabinetInterface
+from cabinets import Cabinets
 
 # .foo file in local filesystem
-local_foo_data = CabinetInterface.read('file://test.foo')
+local_foo_data = Cabinets.read('file://test.foo')
 
 # .foo file in S3
-s3_foo_data = CabinetInterface.read('s3://test.foo')
+s3_foo_data = Cabinets.read('s3://test.foo')
 ```
 
 
@@ -114,13 +114,13 @@ Each `Cabinet` subclass can expose a `set_configuration(**config)` classmethod t
 care of any required initial setup.
 
 ```python
-from cabinets.cabinet import CabinetInterface, S3Cabinet
+from cabinets.cabinet import Cabinets, S3Cabinet
 
 S3Cabinet.set_configuration(region_name='us-west-2')
 
 S3Cabinet.read('bucket-us-west-2/test.json')
 # or
-CabinetInterface.read('s3://bucket-us-west-2/test.json')
+Cabinets.read('s3://bucket-us-west-2/test.json')
 
 ```
 
