@@ -116,10 +116,13 @@ care of any required initial setup.
 ```python
 from cabinets.cabinet import Cabinets, S3Cabinet
 
-S3Cabinet.set_configuration(region_name='us-west-2')
+# set the AWS S3 region to us-west-2 and specify an access key
+S3Cabinet.set_configuration(region_name='us-west-2', aws_access_key_id=...)
 
-S3Cabinet.read('bucket-us-west-2/test.json')
-# or
+# use specific Cabinet to avoid protocol prefix
+S3Cabinet.read('bucket-in-us-west-2/test.json') 
+# or use generic Cabinet with protocol prefix
 Cabinets.read('s3://bucket-us-west-2/test.json')
 ```
 
+See the documentation of specific `Cabinet` classes for what configuration parameters are available.
