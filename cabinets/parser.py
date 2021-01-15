@@ -1,6 +1,7 @@
 import csv
 import json
 import pickle
+from typing import Any
 from abc import ABC, abstractmethod
 from io import StringIO
 
@@ -21,23 +22,23 @@ def register_extensions(*file_types):
 class Parser(ABC):
 
     @classmethod
-    def load(cls, path, content):
+    def load(cls, path, content: bytes):
         filepath, ext = path.split('.')
         return _SUPPORTED_FILE_TYPES[ext].load_content(content)
 
     @classmethod
     @abstractmethod
-    def load_content(cls, content):
+    def load_content(cls, content: bytes):
         pass
 
     @classmethod
-    def dump(cls, path, data):
+    def dump(cls, path, data: Any):
         filepath, ext = path.split('.')
         return _SUPPORTED_FILE_TYPES[ext].dump_content(data)
 
     @classmethod
     @abstractmethod
-    def dump_content(cls, content):
+    def dump_content(cls, data: Any):
         pass
 
 
@@ -82,7 +83,7 @@ class CSVParser(Parser):
 
     @classmethod
     def load_content(cls, content):
-        return list(csv.reader(content.splitlines()))
+        return list(csv.reader(content.decode('utf-8').splitlines()))
 
     @classmethod
     def dump_content(cls, data):
