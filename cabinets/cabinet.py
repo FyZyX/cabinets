@@ -27,7 +27,7 @@ class Cabinet:
         return cabinet, path
 
     @classmethod
-    def read(cls, uri, raw=False) -> bytes:
+    def read(cls, uri, raw=False):
         cabinet, path = cls.from_uri(uri)
         return cabinet.read(path, raw=raw)
 
@@ -50,7 +50,7 @@ class CabinetBase(ABC):
         pass
 
     @classmethod
-    def read(cls, path, raw=False) -> bytes:
+    def read(cls, path, raw=False):
         if raw:
             return cls._read_content(path)
         else:
