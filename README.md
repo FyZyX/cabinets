@@ -25,9 +25,9 @@ with open('data.json', 'w') as fh:
 Read back and parse the file using `cabinets`:
 
 ```python
-from cabinets import Cabinet
+from cabinets import Cabinets
 
-new_obj = Cabinet.read('file://test.json')
+new_obj = Cabinets.read('file://test.json')
 
 assert new_obj == obj
 ```
@@ -40,13 +40,13 @@ That's it! The file is *loaded* and *parsed* in just one line.
 only `cabinets`.
 
 ```python
-from cabinets import Cabinet
+from cabinets import Cabinets
 
 obj = {'test': 1}
 
-Cabinet.create('file://test.json', obj)
+Cabinets.create('file://test.json', obj)
 
-new_obj = Cabinet.read('file://test.json')
+new_obj = Cabinets.read('file://test.json')
 
 assert new_obj == obj
 ```
@@ -94,16 +94,20 @@ class FooParser(Parser):
 
 ```
 
-Then to load a `test.foo` file you can simply use `Cabinet.read`
+Then to load a `test.foo` file you can simply use `Cabinet.read`. 
+
+> **NOTE**: In order for the extension to be registered, the class definition must be
+> run at least once. Make sure the modules where your custom `Parser` classes are defined
+> are imported somewhere before they are used.
 
 ```python
-from cabinets import Cabinet
+from cabinets import Cabinets
 
 # .foo file in local filesystem
-local_foo_data = Cabinet.read('file://test.foo')
+local_foo_data = Cabinets.read('file://test.foo')
 
 # .foo file in S3
-s3_foo_data = Cabinet.read('s3://test.foo')
+s3_foo_data = Cabinets.read('s3://test.foo')
 ```
 
 
@@ -114,13 +118,16 @@ Each `Cabinet` subclass can expose a `set_configuration(**config)` classmethod t
 care of any required initial setup.
 
 ```python
-from cabinets.cabinet import Cabinet, S3Cabinet
+from cabinets.protocols.s3 import S3Cabinet
 
-S3Cabinet.set_configuration(region_name='us-west-2')
+# set the AWS S3 region to us-west-2 and specify an access key
+S3Cabinet.set_configuration(region_name='us-west-2', aws_access_key_id=...)
 
-S3Cabinet.read('bucket-us-west-2/test.json')
-# or
-Cabinet.read('s3://bucket-us-west-2/test.json')
-
+# use specific Cabinet to avoid protocol prefix
+S3Cabinet.read('bucket-in-us-west-2/test.json') 
+# or use generic Cabinet with protocol prefix
+from cabinets.cabinet import Cabinets
+Cabinets.read('s3://bucket-us-west-2/test.json')
 ```
 
+See the documentation of specific `Cabinet` classes for what configuration parameters are available.
