@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import boto3
 
-from cabinets.cabinet import CabinetBase, S3Cabinet
+from cabinets.cabinet import Cabinet, S3Cabinet
 from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
 
@@ -20,12 +20,12 @@ class TestFileSystemCabinet(fake_filesystem_unittest.TestCase):
     def test_read_json(self):
         protocol = 'file'
         filename = os.path.join(self.fixture_path, 'sample.json')
-        data = CabinetBase.read(f'{protocol}://{filename}')
+        data = Cabinet.read(f'{protocol}://{filename}')
         self.assertEqual({'hello': 'world'}, data)
 
     def test_create_json(self):
         protocol, filename = 'file', 'tmp/sample.json'
-        CabinetBase.create(f'{protocol}://{filename}', {'hello': 'world'})
+        Cabinet.create(f'{protocol}://{filename}', {'hello': 'world'})
         with open(filename) as fh:
             data = json.load(fh)
         self.assertEqual({'hello': 'world'}, data)
@@ -36,29 +36,30 @@ class TestFileSystemCabinet(fake_filesystem_unittest.TestCase):
         with open(filename, 'w') as fh:
             json.dump(data, fh)
         self.assertTrue(os.path.isfile(filename))
-        CabinetBase.delete(f'{protocol}://{filename}')
+        Cabinet.delete(f'{protocol}://{filename}')
         self.assertFalse(os.path.isfile(filename))
 
     def test_read_create_json(self):
         protocol, filename = 'file', 'test.json'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
-        CabinetBase.create(f'{protocol}://{filename}', data)
-        result = CabinetBase.read(f'{protocol}://{filename}')
+        Cabinet.create(f'{protocol}://{filename}', data)
+        Cabinet.create(f'{protocol}://{filename}', data)
+        result = Cabinet.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
 
     def test_read_create_yaml(self):
         protocol, filename = 'file', 'test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
-        CabinetBase.create(f'{protocol}://{filename}', data)
-        result = CabinetBase.read(f'{protocol}://{filename}')
+        Cabinet.create(f'{protocol}://{filename}', data)
+        result = Cabinet.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
 
     def test_read_create_pickle(self):
         protocol, filename = 'file', 'test.pickle'
         data = {'I': {'am': ['nested', 1 + 2j, 'object', None],
                       'purple': SimpleNamespace(egg=True, fish=42)}}
-        CabinetBase.create(f'{protocol}://{filename}', data)
-        result = CabinetBase.read(f'{protocol}://{filename}')
+        Cabinet.create(f'{protocol}://{filename}', data)
+        result = Cabinet.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
 
 
@@ -78,9 +79,9 @@ class TestS3Cabinet(unittest.TestCase):
         client.create_bucket(Bucket=bucket)
         protocol, filename = 's3', f'{bucket}/test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
-        CabinetBase.create(f'{protocol}://{filename}', data)
-        result = CabinetBase.read(f'{protocol}://{filename}')
-        CabinetBase.delete(f'{protocol}://{filename}')
+        Cabinet.create(f'{protocol}://{filename}', data)
+        result = Cabinet.read(f'{protocol}://{filename}')
+        Cabinet.delete(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
         client.delete_bucket(Bucket=bucket)
 
