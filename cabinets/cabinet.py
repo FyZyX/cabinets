@@ -1,6 +1,8 @@
 import os
 from abc import ABC, abstractmethod
 
+import boto3
+
 from cabinets.logger import error, info
 from cabinets.parser import Parser
 
@@ -17,6 +19,11 @@ def register_protocols(*protocols):
 
 
 class Cabinet(ABC):
+
+    @classmethod
+    @abstractmethod
+    def set_configuration(cls, **kwargs):
+        pass
 
     @classmethod
     def from_uri(cls, uri):
@@ -63,17 +70,26 @@ class Cabinet(ABC):
 
 @register_protocols('s3')
 class S3Cabinet(Cabinet):
-    # client = boto3.client('s3', region_name=NotImplemented)
     client = None
+
+    @classmethod
+    def set_configuration(cls, region_name='us-east-1', aws_access_key_id=None,
+                          aws_secret_access_key=None, aws_session_token=None):
+        cls.client = boto3.client('s3', region_name=region_name,
+                                  aws_access_key_id=aws_access_key_id,
+                                  aws_secret_access_key=aws_secret_access_key,
+                                  aws_session_token=aws_session_token)
 
     @classmethod
     def _read_content(cls, path):
         bucket, *key = path.split('/')
+        if not key:
+            raise ValueError('S3 path needs bucket')
         key = '/'.join(key)
         info(f'Downloading {key} from Bucket {bucket}')
         try:
             resp = cls.client.get_object(Bucket=bucket, Key=key)
-            return resp._read_content('Body').read()
+            return resp.get('Body').read()
         except Exception as ex:
             error(f"Cannot download {path} from S3 Bucket '{bucket}': {ex}")
             return None
@@ -90,6 +106,18 @@ class S3Cabinet(Cabinet):
             error(f"Cannot upload {path} to S3 Bucket '{bucket}': {ex}")
             return False
 
+    @classmethod
+    def _delete_content(cls, path):
+        bucket, *key = path.split('/')
+        key = '/'.join(key)
+        info(f"Uploading {key} to {bucket}")
+        try:
+            cls.client.delete_object(Bucket=bucket, Key=key)
+            return True
+        except Exception as ex:
+            error(f"Cannot delete {path} from S3 Bucket '{bucket}': {ex}")
+            return False
+
 
 @register_protocols('file')
 class FileCabinet(Cabinet):
@@ -101,7 +129,8 @@ class FileCabinet(Cabinet):
 
     @classmethod
     def _create_content(cls, path, content):
-        if dirs := os.path.dirname(os.path.normpath(path)):
+        dirs = os.path.dirname(os.path.normpath(path))
+        if dirs:
             os.makedirs(dirs, exist_ok=True)
         mode = 'w' if isinstance(content, str) else 'wb'
         with open(os.path.normpath(path), mode) as file:

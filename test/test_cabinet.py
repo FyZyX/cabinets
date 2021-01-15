@@ -3,11 +3,14 @@ import os
 import unittest
 from types import SimpleNamespace
 
-from cabinets.cabinet import Cabinet
+import boto3
+
+from cabinets.cabinet import Cabinet, S3Cabinet
+from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
 
 
-class TestCabinet(fake_filesystem_unittest.TestCase):
+class TestFileSystemCabinet(fake_filesystem_unittest.TestCase):
     fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
     def setUp(self):
@@ -57,6 +60,29 @@ class TestCabinet(fake_filesystem_unittest.TestCase):
         Cabinet.create(f'{protocol}://{filename}', data)
         result = Cabinet.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
+
+
+@mock_s3
+class TestS3Cabinet(unittest.TestCase):
+
+    def setUp(self) -> None:
+        S3Cabinet.set_configuration(region_name='us-west-2')
+
+    def test_set_configuration_region(self):
+        self.assertIsNotNone(S3Cabinet.client)
+        self.assertEqual(S3Cabinet.client.meta.region_name, 'us-west-2')
+
+    def test_read_create(self):
+        client = boto3.client('s3', region_name='us-west-2')
+        bucket = 'mock-bucket'
+        client.create_bucket(Bucket=bucket)
+        protocol, filename = 's3', f'{bucket}/test.yml'
+        data = {'I': {'am': ['nested', 1, 'object', None]}}
+        Cabinet.create(f'{protocol}://{filename}', data)
+        result = Cabinet.read(f'{protocol}://{filename}')
+        Cabinet.delete(f'{protocol}://{filename}')
+        self.assertDictEqual(data, result)
+        client.delete_bucket(Bucket=bucket)
 
 
 if __name__ == '__main__':
