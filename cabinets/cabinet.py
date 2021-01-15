@@ -148,7 +148,7 @@ class Cabinets:
     @classmethod
     def create(cls, uri, content, raw=False):
         cabinet, path = cls.from_uri(uri)
-        return cabinet.read(path, content, raw=raw)
+        return cabinet.create(path, content, raw=raw)
 
     @classmethod
     def delete(cls, uri):
