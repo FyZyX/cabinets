@@ -32,7 +32,7 @@ class Cabinet(ABC):
         return cabinet, path
 
     @classmethod
-    def read(cls, uri, raw=False):
+    def read(cls, uri, raw=False) -> bytes:
         cabinet, path = cls.from_uri(uri)
         if raw:
             return cabinet._read_content(path)
@@ -54,7 +54,7 @@ class Cabinet(ABC):
 
     @classmethod
     @abstractmethod
-    def _read_content(cls, path):
+    def _read_content(cls, path) -> bytes:
         pass
 
     @classmethod
@@ -81,7 +81,7 @@ class S3Cabinet(Cabinet):
                                   aws_session_token=aws_session_token)
 
     @classmethod
-    def _read_content(cls, path):
+    def _read_content(cls, path) -> bytes:
         bucket, *key = path.split('/')
         if not key:
             raise ValueError('S3 path needs bucket')
@@ -92,7 +92,7 @@ class S3Cabinet(Cabinet):
             return resp.get('Body').read()
         except Exception as ex:
             error(f"Cannot download {path} from S3 Bucket '{bucket}': {ex}")
-            return None
+            raise ex
 
     @classmethod
     def _create_content(cls, path, content):
@@ -122,7 +122,7 @@ class S3Cabinet(Cabinet):
 @register_protocols('file')
 class FileCabinet(Cabinet):
     @classmethod
-    def _read_content(cls, path):
+    def _read_content(cls, path) -> bytes:
         # TODO: Investigate if binary read mode is always okay
         with open(os.path.normpath(path), 'rb') as file:
             return file.read()
