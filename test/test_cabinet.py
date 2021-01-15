@@ -4,7 +4,6 @@ import unittest
 from types import SimpleNamespace
 
 import boto3
-from botocore import exceptions
 
 from cabinets.cabinet import Cabinet, S3Cabinet
 from moto import mock_s3
