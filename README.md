@@ -94,7 +94,11 @@ class FooParser(Parser):
 
 ```
 
-Then to load a `test.foo` file you can simply use `Cabinet.read`
+Then to load a `test.foo` file you can simply use `Cabinet.read`. 
+
+> **NOTE**: In order for the extension to be registered, the class definition must be
+> run at least once. Make sure the modules where your custom `Parser` classes are defined
+> are imported somewhere before they are used.
 
 ```python
 from cabinets import Cabinets
