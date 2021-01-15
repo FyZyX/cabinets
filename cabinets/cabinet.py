@@ -70,12 +70,15 @@ class Cabinet(ABC):
 
 @register_protocols('s3')
 class S3Cabinet(Cabinet):
-
     client = None
 
     @classmethod
-    def set_configuration(cls, region_name='us-east-1'):
-        cls.client = boto3.client('s3', region_name=region_name)
+    def set_configuration(cls, region_name='us-east-1', aws_access_key_id=None,
+                          aws_secret_access_key=None, aws_session_token=None):
+        cls.client = boto3.client('s3', region_name=region_name,
+                                  aws_access_key_id=aws_access_key_id,
+                                  aws_secret_access_key=aws_secret_access_key,
+                                  aws_session_token=aws_session_token)
 
     @classmethod
     def _read_content(cls, path):
