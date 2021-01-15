@@ -31,9 +31,9 @@ class Parser(ABC):
         pass
 
     @classmethod
-    def dump(cls, path, content):
+    def dump(cls, path, data):
         filepath, ext = path.split('.')
-        return _SUPPORTED_FILE_TYPES[ext].dump_content(content)
+        return _SUPPORTED_FILE_TYPES[ext].dump_content(data)
 
     @classmethod
     @abstractmethod
@@ -49,8 +49,8 @@ class PickleParser(Parser):
         return pickle.loads(content)
 
     @classmethod
-    def dump_content(cls, content):
-        return pickle.dumps(content)
+    def dump_content(cls, data):
+        return pickle.dumps(data)
 
 
 @register_extensions('json')
@@ -61,8 +61,8 @@ class JSONParser(Parser):
         return json.loads(content)
 
     @classmethod
-    def dump_content(cls, content):
-        return json.dumps(content)
+    def dump_content(cls, data):
+        return json.dumps(data)
 
 
 @register_extensions('yaml', 'yml')
@@ -73,8 +73,8 @@ class YAMLParser(Parser):
         return yaml.safe_load(content)
 
     @classmethod
-    def dump_content(cls, content):
-        return yaml.safe_dump(content)
+    def dump_content(cls, data):
+        return yaml.safe_dump(data)
 
 
 @register_extensions('csv')
@@ -85,16 +85,16 @@ class CSVParser(Parser):
         return list(csv.reader(content.splitlines()))
 
     @classmethod
-    def dump_content(cls, content):
+    def dump_content(cls, data):
         csv_buffer = StringIO()
-        if type(content[0]) == dict:
+        if type(data[0]) == dict:
             # TODO: Grabbing the field names the first list item is kinda wonky
-            fields = list(content[0].keys())
+            fields = list(data[0].keys())
             writer = csv.DictWriter(csv_buffer, fieldnames=fields, lineterminator='\n')
             writer.writeheader()
-            writer.writerows(content)
+            writer.writerows(data)
             return csv_buffer.getvalue()
         else:
             csv_buffer = StringIO()
-            csv.writer(csv_buffer, lineterminator='\n').writerows(content)
+            csv.writer(csv_buffer, lineterminator='\n').writerows(data)
             return csv_buffer.getvalue()
