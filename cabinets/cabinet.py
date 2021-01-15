@@ -1,6 +1,8 @@
 import os
 from abc import ABC, abstractmethod
 
+import boto3
+
 from cabinets.logger import error, info
 from cabinets.parser import Parser
 
@@ -17,6 +19,11 @@ def register_protocols(*protocols):
 
 
 class Cabinet(ABC):
+
+    @classmethod
+    @abstractmethod
+    def set_configuration(cls, **kwargs):
+        pass
 
     @classmethod
     def from_uri(cls, uri):
@@ -63,17 +70,23 @@ class Cabinet(ABC):
 
 @register_protocols('s3')
 class S3Cabinet(Cabinet):
-    # client = boto3.client('s3', region_name=NotImplemented)
+
     client = None
+
+    @classmethod
+    def set_configuration(cls, region_name='us-east-1'):
+        cls.client = boto3.client('s3', region_name=region_name)
 
     @classmethod
     def _read_content(cls, path):
         bucket, *key = path.split('/')
+        if not key:
+            raise ValueError('S3 path needs bucket')
         key = '/'.join(key)
         info(f'Downloading {key} from Bucket {bucket}')
         try:
             resp = cls.client.get_object(Bucket=bucket, Key=key)
-            return resp._read_content('Body').read()
+            return resp.get('Body').read()
         except Exception as ex:
             error(f"Cannot download {path} from S3 Bucket '{bucket}': {ex}")
             return None
@@ -88,6 +101,18 @@ class S3Cabinet(Cabinet):
             return True
         except Exception as ex:
             error(f"Cannot upload {path} to S3 Bucket '{bucket}': {ex}")
+            return False
+
+    @classmethod
+    def _delete_content(cls, path):
+        bucket, *key = path.split('/')
+        key = '/'.join(key)
+        info(f"Uploading {key} to {bucket}")
+        try:
+            cls.client.delete_object(Bucket=bucket, Key=key)
+            return True
+        except Exception as ex:
+            error(f"Cannot delete {path} from S3 Bucket '{bucket}': {ex}")
             return False
 
 
