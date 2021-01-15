@@ -85,7 +85,5 @@ class TestS3Cabinet(unittest.TestCase):
         client.delete_bucket(Bucket=bucket)
 
 
-
-
 if __name__ == '__main__':
     unittest.main()
