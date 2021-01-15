@@ -5,7 +5,8 @@ from types import SimpleNamespace
 
 import boto3
 
-from cabinets.cabinet import Cabinets, S3Cabinet
+from cabinets import Cabinets
+from cabinets.protocols.s3 import S3Cabinet
 from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
 
@@ -72,6 +73,18 @@ class TestS3Cabinet(unittest.TestCase):
     def test_set_configuration_region(self):
         self.assertIsNotNone(S3Cabinet.client)
         self.assertEqual(S3Cabinet.client.meta.region_name, 'us-west-2')
+
+    def test_read_create_s3_cabinet(self):
+        client = boto3.client('s3', region_name='us-west-2')
+        bucket = 'mock-bucket'
+        client.create_bucket(Bucket=bucket)
+        filename = f'{bucket}/test.yml'
+        data = {'I': {'am': ['nested', 1, 'object', None]}}
+        S3Cabinet.create(f'{filename}', data)
+        result = S3Cabinet.read(f'{filename}')
+        S3Cabinet.delete(f'{filename}')
+        self.assertDictEqual(data, result)
+        client.delete_bucket(Bucket=bucket)
 
     def test_read_create(self):
         client = boto3.client('s3', region_name='us-west-2')
