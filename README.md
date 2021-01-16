@@ -1,8 +1,8 @@
 # Cabinets
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cabinets?style=flat-square)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lucasmlofaro/cabinets/Python%20package?style=flat-square)
-![PyPI](https://img.shields.io/pypi/v/cabinets?style=flat-square)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cabinets?style=flat-square)](#cabinets)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lucasmlofaro/cabinets/Python%20package?style=flat-square)](#cabinets)
+[![PyPI](https://img.shields.io/pypi/v/cabinets?style=flat-square)](https://pypi.org/project/cabinets/)
 
 `cabinets` is a Python library that provides a consistent interface for file operations
 across multiple storage platforms. File extensions are dynamically detected to allow
