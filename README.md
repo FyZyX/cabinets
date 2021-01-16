@@ -85,11 +85,11 @@ from cabinets.parser import Parser, register_extensions
 class FooParser(Parser):
 
     @classmethod
-    def load_content(cls, content: bytes):
+    def _load_content(cls, content: bytes) -> Any:
         return deserialize_foo(content)  # custom deserialization logic
 
     @classmethod
-    def dump_content(cls, data: Any):
+    def _dump_content(cls, data: Any) -> bytes:
         return serialize_foo(data)  # custom serialization logic
 
 ```
