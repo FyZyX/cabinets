@@ -21,7 +21,7 @@ with open('README.md') as file:
 
 setup(
     name='cabinets',
-    version='0.1.1',
+    version='0.1.2',
     description="A consistent approach to file operations, anywhere.",
     long_description=readme,
     long_description_content_type='text/markdown',
@@ -29,6 +29,7 @@ setup(
     author_email="lucasmlofaro@gmail.com, samhollenbach@gmail.com",
     url='https://github.com/lucasmlofaro/cabinets',
     packages=find_packages(exclude=['test']),
+    python_requires='>=3.6',
     install_requires=requirements,
     tests_require=tests_requirements,
     extras_require={'test': tests_requirements},
