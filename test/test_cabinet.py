@@ -6,6 +6,7 @@ from types import SimpleNamespace
 import boto3
 
 from cabinets import Cabinets
+from cabinets.cabinet import InvalidURIError
 from cabinets.protocols.s3 import S3Cabinet
 from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
@@ -97,6 +98,24 @@ class TestS3Cabinet(unittest.TestCase):
         Cabinets.delete(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
         client.delete_bucket(Bucket=bucket)
+
+
+class TestURI(unittest.TestCase):
+
+    def test_cabinet_from_uri_fails_on_missing_protocol(self):
+        uri = 'path/to/file'
+        with self.assertRaises(InvalidURIError):
+            Cabinets.from_uri(uri)
+
+    def test_cabinet_from_uri_fails_on_unknown_protocol(self):
+        uri = 'foo://path/to/file'
+        with self.assertRaises(InvalidURIError):
+            Cabinets.from_uri(uri)
+
+    def test_cabinet_from_uri_fails_on_empty_path(self):
+        uri = 'file://'
+        with self.assertRaises(InvalidURIError):
+            Cabinets.from_uri(uri)
 
 
 if __name__ == '__main__':

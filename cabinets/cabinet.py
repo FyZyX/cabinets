@@ -54,14 +54,27 @@ class CabinetBase(ABC):
         pass
 
 
+class CabinetError(Exception):
+    pass
+
+
+class InvalidURIError(Exception):
+    pass
+
+
 class Cabinets:
 
     @classmethod
     def from_uri(cls, uri) -> (CabinetBase, str):
-        protocol, path = uri.split('://')
+        try:
+            protocol, path = uri.split('://')
+        except ValueError:
+            raise InvalidURIError("Missing protocol identifier")
         cabinet = _SUPPORTED_PROTOCOLS.get(protocol)
         if not cabinet:
-            raise KeyError(f'Could not find Cabinet for protocol key \'{protocol}\'')
+            raise InvalidURIError(f"Unknown protocol '{protocol}'")
+        if not path:
+            raise InvalidURIError(f"Empty resource path")
         return cabinet, path
 
     @classmethod
