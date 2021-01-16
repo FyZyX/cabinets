@@ -1,10 +1,20 @@
+import importlib
+import os
+import pkgutil
+
 from cabinets.cabinet import CabinetBase, SUPPORTED_PROTOCOLS
-from cabinets.cabinet.file import FileCabinet  # noqa: F401
-from cabinets.cabinet.s3 import S3Cabinet  # noqa: F401
-from cabinets.parser.pickle import PickleParser  # noqa: F401
-from cabinets.parser.json import JSONParser  # noqa: F401
-from cabinets.parser.yaml import YAMLParser  # noqa: F401
-from cabinets.parser.csv import CSVParser  # noqa: F401
+
+
+def load_plugins(plugin_dir):
+    path = os.path.join(os.path.dirname(__file__), plugin_dir)
+    pkgs = pkgutil.iter_modules((path,))
+    for plugin in pkgs:
+        pkg = '.'.join((__package__, plugin_dir, plugin.name))
+        importlib.import_module(pkg)
+
+
+load_plugins('cabinet')
+load_plugins('parser')
 
 
 class InvalidURIError(Exception):
