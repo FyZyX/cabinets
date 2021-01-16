@@ -25,7 +25,7 @@ def get_long_description(filename='README.md'):
 setup(
     name='cabinets',
     version='0.1.0',
-    description="A consistent approach to file operations.",
+    description="A consistent approach to file operations, anywhere.",
     long_description=get_long_description(),
     long_description_content_type='text/markdown',
     author="Lucas Lofaro, Sam Hollenbach",
