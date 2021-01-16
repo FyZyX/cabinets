@@ -15,18 +15,15 @@ tests_requirements = (
     'pytest-cov'
 )
 
-
-def get_long_description(filename='README.md'):
-    with open(filename) as file:
-        readme = file.read()
-    return readme
+with open('README.md') as file:
+    readme = file.read()
 
 
 setup(
     name='cabinets',
     version='0.1.0',
     description="A consistent approach to file operations.",
-    long_description=get_long_description(),
+    long_description=readme,
     long_description_content_type='text/markdown',
     author="Lucas Lofaro, Sam Hollenbach",
     author_email="lucasmlofaro@gmail.com, samhollenbach@gmail.com",
