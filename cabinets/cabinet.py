@@ -54,7 +54,6 @@ class CabinetBase(ABC):
         pass
 
 
-
 class Cabinets:
 
     @classmethod

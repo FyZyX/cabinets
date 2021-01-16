@@ -7,7 +7,6 @@ requirements = (
 )
 
 tests_requirements = (
-    'flake8',
     'coverage',
     'moto==1.3.14',
     'pyfakefs',
@@ -17,7 +16,6 @@ tests_requirements = (
 
 with open('README.md') as file:
     readme = file.read()
-
 
 setup(
     name='cabinets',
@@ -29,6 +27,21 @@ setup(
     author_email="lucasmlofaro@gmail.com, samhollenbach@gmail.com",
     url='https://github.com/lucasmlofaro/cabinets',
     packages=find_packages(exclude=['test']),
+    classifiers=(
+        "Development Status :: 4 - Beta",
+        "Framework :: Pytest",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Operating System :: Unix",
+        "Operating System :: MacOS :: MacOS X",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+    ),
+    license='GNU GPLv3+',
     python_requires='>=3.6',
     install_requires=requirements,
     tests_require=tests_requirements,
