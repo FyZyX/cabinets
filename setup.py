@@ -19,7 +19,7 @@ with open('README.md') as file:
 
 setup(
     name='cabinets',
-    version='0.1.2',
+    version='0.1.3',
     description="A consistent approach to file operations, anywhere.",
     long_description=readme,
     long_description_content_type='text/markdown',
