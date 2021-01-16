@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
+
 from cabinets.parser import Parser
 
-_SUPPORTED_PROTOCOLS = {}
+SUPPORTED_PROTOCOLS = {}
 
 
 class CabinetError(Exception):
@@ -19,10 +20,10 @@ def register_protocols(*protocols):
             raise CabinetError(
                 "Cannot register protocol: Decorated object must be a class")
         for protocol in protocols:
-            if protocol in _SUPPORTED_PROTOCOLS:
+            if protocol in SUPPORTED_PROTOCOLS:
                 raise CabinetError(f"Protocol already associated with Cabinet "
-                                   f"'{_SUPPORTED_PROTOCOLS[protocol].__qualname__}'")
-            _SUPPORTED_PROTOCOLS[protocol] = cabinet
+                                   f"'{SUPPORTED_PROTOCOLS[protocol].__qualname__}'")
+            SUPPORTED_PROTOCOLS[protocol] = cabinet
         return cabinet
 
     return decorate_cabinet
@@ -67,38 +68,3 @@ class CabinetBase(ABC):
     @abstractmethod
     def _delete_content(cls, path):
         pass  # pragma: no cover
-
-
-class InvalidURIError(Exception):
-    pass
-
-
-class Cabinets:
-
-    @classmethod
-    def from_uri(cls, uri) -> (CabinetBase, str):
-        try:
-            protocol, path = uri.split('://')
-        except ValueError:
-            raise InvalidURIError("Missing protocol identifier")
-        cabinet = _SUPPORTED_PROTOCOLS.get(protocol)
-        if not cabinet:
-            raise InvalidURIError(f"Unknown protocol '{protocol}'")
-        if not path:
-            raise InvalidURIError("Empty resource path")
-        return cabinet, path
-
-    @classmethod
-    def read(cls, uri, raw=False):
-        cabinet, path = cls.from_uri(uri)
-        return cabinet.read(path, raw=raw)
-
-    @classmethod
-    def create(cls, uri, content, raw=False):
-        cabinet, path = cls.from_uri(uri)
-        return cabinet.create(path, content, raw=raw)
-
-    @classmethod
-    def delete(cls, uri):
-        cabinet, path = cls.from_uri(uri)
-        return cabinet.delete(path)
