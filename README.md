@@ -122,7 +122,7 @@ Each `Cabinet` subclass can expose a `set_configuration(**config)` classmethod t
 care of any required initial setup.
 
 ```python
-from cabinets.protocols.s3 import S3Cabinet
+from cabinets.cabinet.s3 import S3Cabinet
 
 # set the AWS S3 region to us-west-2 and specify an access key
 S3Cabinet.set_configuration(region_name='us-west-2', aws_access_key_id=...)
@@ -130,7 +130,7 @@ S3Cabinet.set_configuration(region_name='us-west-2', aws_access_key_id=...)
 # use specific Cabinet to avoid protocol prefix
 S3Cabinet.read('bucket-in-us-west-2/test.json') 
 # or use generic Cabinet with protocol prefix
-from cabinets.cabinet import Cabinets
+from cabinets import Cabinets
 Cabinets.read('s3://bucket-us-west-2/test.json')
 ```
 
