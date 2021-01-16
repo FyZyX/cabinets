@@ -1,0 +1,7 @@
+[run]
+source = cabinets/
+omit = cabinets/logger.py
+
+[report]
+show_missing = true
+fail_under = 70

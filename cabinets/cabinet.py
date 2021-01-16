@@ -4,9 +4,24 @@ from cabinets.parser import Parser
 _SUPPORTED_PROTOCOLS = {}
 
 
+class CabinetError(Exception):
+    pass
+
+
 def register_protocols(*protocols):
-    def decorate_cabinet(cabinet: CabinetBase):
+    def decorate_cabinet(cabinet):
+        try:
+            if not issubclass(cabinet, CabinetBase):
+                raise CabinetError(f"Cannot register protocol: Type "
+                                   f"'{cabinet.__name__}' is not a subclass of "
+                                   f"'{CabinetBase.__name__}'")
+        except TypeError:
+            raise CabinetError(
+                "Cannot register protocol: Decorated object must be a class")
         for protocol in protocols:
+            if protocol in _SUPPORTED_PROTOCOLS:
+                raise CabinetError(f"Protocol already associated with Cabinet "
+                                   f"'{_SUPPORTED_PROTOCOLS[protocol].__qualname__}'")
             _SUPPORTED_PROTOCOLS[protocol] = cabinet
         return cabinet
 
@@ -18,7 +33,7 @@ class CabinetBase(ABC):
     @classmethod
     @abstractmethod
     def set_configuration(cls, **kwargs):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     def read(cls, path, raw=False):
@@ -41,27 +56,36 @@ class CabinetBase(ABC):
     @classmethod
     @abstractmethod
     def _read_content(cls, path) -> bytes:
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     @abstractmethod
     def _create_content(cls, path, content):
-        pass
+        pass  # pragma: no cover
 
     @classmethod
     @abstractmethod
     def _delete_content(cls, path):
-        pass
+        pass  # pragma: no cover
+
+
+class InvalidURIError(Exception):
+    pass
 
 
 class Cabinets:
 
     @classmethod
     def from_uri(cls, uri) -> (CabinetBase, str):
-        protocol, path = uri.split('://')
+        try:
+            protocol, path = uri.split('://')
+        except ValueError:
+            raise InvalidURIError("Missing protocol identifier")
         cabinet = _SUPPORTED_PROTOCOLS.get(protocol)
         if not cabinet:
-            raise KeyError(f'Could not find Cabinet for protocol key \'{protocol}\'')
+            raise InvalidURIError(f"Unknown protocol '{protocol}'")
+        if not path:
+            raise InvalidURIError("Empty resource path")
         return cabinet, path
 
     @classmethod

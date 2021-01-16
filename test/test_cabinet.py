@@ -6,6 +6,8 @@ from types import SimpleNamespace
 import boto3
 
 from cabinets import Cabinets
+from cabinets.cabinet import (InvalidURIError, CabinetBase, register_protocols,
+                              _SUPPORTED_PROTOCOLS, CabinetError)
 from cabinets.protocols.s3 import S3Cabinet
 from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
@@ -97,6 +99,66 @@ class TestS3Cabinet(unittest.TestCase):
         Cabinets.delete(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
         client.delete_bucket(Bucket=bucket)
+
+
+class TestURI(unittest.TestCase):
+
+    def test_cabinet_from_uri_fails_on_missing_protocol(self):
+        uri = 'path/to/file'
+        with self.assertRaises(InvalidURIError):
+            Cabinets.from_uri(uri)
+
+    def test_cabinet_from_uri_fails_on_unknown_protocol(self):
+        uri = 'foo://path/to/file'
+        with self.assertRaises(InvalidURIError):
+            Cabinets.from_uri(uri)
+
+    def test_cabinet_from_uri_fails_on_empty_path(self):
+        uri = 'file://'
+        with self.assertRaises(InvalidURIError):
+            Cabinets.from_uri(uri)
+
+
+class MockCabinet(CabinetBase):
+    @classmethod
+    def set_configuration(cls, **kwargs):
+        return NotImplemented
+
+    @classmethod
+    def _read_content(cls, path) -> bytes:
+        return NotImplemented
+
+    @classmethod
+    def _create_content(cls, path, content):
+        return NotImplemented
+
+    @classmethod
+    def _delete_content(cls, path):
+        return NotImplemented
+
+
+class TestRegisterProtocols(unittest.TestCase):
+
+    def test_register_protocols_succeeds(self):
+        cls = register_protocols('mock')(MockCabinet)
+        self.assertIs(cls, MockCabinet)
+        self.assertIn('mock', _SUPPORTED_PROTOCOLS)
+        self.assertIs(_SUPPORTED_PROTOCOLS['mock'], MockCabinet)
+
+    def test_register_protocols_fails_on_existing_protocol(self):
+        with self.assertRaises(CabinetError) as err:
+            register_protocols('file')(MockCabinet)
+        self.assertIn('already associated', str(err.exception))
+
+    def test_register_protocols_fails_on_subclass_check(self):
+        with self.assertRaises(CabinetError) as err:
+            register_protocols('mock')(int)
+        self.assertIn('not a subclass', str(err.exception))
+
+    def test_register_protocols_fails_on_attempt_to_register_instance(self):
+        with self.assertRaises(CabinetError) as err:
+            register_protocols('mock')(42)
+        self.assertIn('must be a class', str(err.exception))
 
 
 if __name__ == '__main__':
