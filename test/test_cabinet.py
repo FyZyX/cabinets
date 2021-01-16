@@ -6,9 +6,10 @@ from types import SimpleNamespace
 import boto3
 
 from cabinets import Cabinets
-from cabinets.cabinet import (InvalidURIError, CabinetBase, register_protocols,
-                              _SUPPORTED_PROTOCOLS, CabinetError)
-from cabinets.protocols.s3 import S3Cabinet
+from cabinets.cabinet import (CabinetBase, register_protocols, SUPPORTED_PROTOCOLS,
+                              CabinetError)
+from cabinets import InvalidURIError
+from cabinets.cabinet.s3 import S3Cabinet
 from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
 
@@ -142,8 +143,8 @@ class TestRegisterProtocols(unittest.TestCase):
     def test_register_protocols_succeeds(self):
         cls = register_protocols('mock')(MockCabinet)
         self.assertIs(cls, MockCabinet)
-        self.assertIn('mock', _SUPPORTED_PROTOCOLS)
-        self.assertIs(_SUPPORTED_PROTOCOLS['mock'], MockCabinet)
+        self.assertIn('mock', SUPPORTED_PROTOCOLS)
+        self.assertIs(SUPPORTED_PROTOCOLS['mock'], MockCabinet)
 
     def test_register_protocols_fails_on_existing_protocol(self):
         with self.assertRaises(CabinetError) as err:
