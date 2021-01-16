@@ -7,7 +7,6 @@ requirements = (
 )
 
 tests_requirements = (
-    'coverage',
     'moto==1.3.14',
     'pyfakefs',
     'pytest',

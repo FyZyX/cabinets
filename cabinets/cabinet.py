@@ -74,7 +74,7 @@ class Cabinets:
         if not cabinet:
             raise InvalidURIError(f"Unknown protocol '{protocol}'")
         if not path:
-            raise InvalidURIError(f"Empty resource path")
+            raise InvalidURIError("Empty resource path")
         return cabinet, path
 
     @classmethod
