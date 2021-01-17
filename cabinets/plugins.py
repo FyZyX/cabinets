@@ -13,7 +13,7 @@ def discover_built_in(plugin_path):
     for plugin in plugins:
         pkg = '.'.join((__package__, plugin_path, plugin.name))
         importlib.import_module(pkg)
-        info(f"Loaded custom plugin '{plugin.name}'")
+        info(f"Loaded built-in plugin '{plugin.name}'")
 
 
 def discover_custom(*paths):
