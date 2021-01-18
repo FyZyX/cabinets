@@ -12,10 +12,10 @@ class CabinetError(Exception):
 def register_protocols(*protocols):
     def decorate_cabinet(cabinet):
         try:
-            if not issubclass(cabinet, CabinetBase):
+            if not issubclass(cabinet, Cabinet):
                 raise CabinetError(f"Cannot register protocol: Type "
                                    f"'{cabinet.__name__}' is not a subclass of "
-                                   f"'{CabinetBase.__name__}'")
+                                   f"'{Cabinet.__name__}'")
         except TypeError:
             raise CabinetError(
                 "Cannot register protocol: Decorated object must be a class")
@@ -29,7 +29,7 @@ def register_protocols(*protocols):
     return decorate_cabinet
 
 
-class CabinetBase(ABC):
+class Cabinet(ABC):
 
     @classmethod
     @abstractmethod

@@ -9,8 +9,8 @@ from pyfakefs import fake_filesystem_unittest
 
 import cabinets
 from cabinets import InvalidURIError
-from cabinets.cabinet import (
-    CabinetBase,
+from cabinets import (
+    Cabinet,
     CabinetError,
     register_protocols,
     SUPPORTED_PROTOCOLS,
@@ -124,7 +124,7 @@ class TestURI(unittest.TestCase):
             cabinets.from_uri(uri)
 
 
-class MockCabinet(CabinetBase):
+class MockCabinet(Cabinet):
     @classmethod
     def set_configuration(cls, **kwargs):
         return NotImplemented

@@ -1,11 +1,11 @@
 import boto3
 
-from cabinets.cabinet import register_protocols, CabinetBase
+from cabinets.cabinet import register_protocols, Cabinet
 from cabinets.logger import info, error
 
 
 @register_protocols('s3')
-class S3Cabinet(CabinetBase):
+class S3Cabinet(Cabinet):
     client = None
 
     @classmethod

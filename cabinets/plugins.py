@@ -2,22 +2,25 @@ import importlib
 import importlib.util
 import os
 import pkgutil
+import sys
 
+import cabinets.cabinet
+import cabinets.parser
 from cabinets.logger import info
 
 
-def discover_built_in(plugin_path):
-    plugins = pkgutil.iter_modules((
-        os.path.join(os.path.dirname(__file__), plugin_path),
-    ))
-    for plugin in plugins:
-        pkg = '.'.join((__package__, plugin_path, plugin.name))
-        importlib.import_module(pkg)
-        info(f"Loaded built-in plugin '{plugin.name}'")
+def discover(path, prefix):
+    plugins = pkgutil.iter_modules(path, prefix + '.')
+    for _, name, _ in plugins:
+        importlib.import_module(name)
+        info(f"Loaded plugin '{name}'")
 
 
-def discover_custom(*paths):
-    plugins = pkgutil.iter_modules(paths)
-    for plugin in plugins:
-        plugin.module_finder.find_module(plugin.name).load_module()
-        info(f"Loaded custom plugin '{plugin.name}'")
+def discover_all(custom_plugin_path=None):
+    discover(cabinets.cabinet.__path__, prefix=cabinets.cabinet.__name__)
+    discover(cabinets.parser.__path__, prefix=cabinets.parser.__name__)
+    if custom_plugin_path:
+        sys.path.insert(1, custom_plugin_path)
+        for pkg in ['cabinet', 'parser']:
+            path = os.path.join(custom_plugin_path, pkg)
+            discover((path,), prefix=pkg)

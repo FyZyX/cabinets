@@ -1,10 +1,10 @@
 import os
 
-from cabinets.cabinet import register_protocols, CabinetBase
+from cabinets.cabinet import register_protocols, Cabinet
 
 
 @register_protocols('file')
-class FileCabinet(CabinetBase):
+class FileCabinet(Cabinet):
     @classmethod
     def _read_content(cls, path) -> bytes:
         # TODO: Investigate if binary read mode is always okay

@@ -1,44 +1,49 @@
 import os
 
 from cabinets import plugins
-from cabinets.cabinet import CabinetBase, SUPPORTED_PROTOCOLS
+from cabinets.cabinet import (
+    Cabinet,
+    CabinetError,
+    register_protocols,
+    SUPPORTED_PROTOCOLS,
+)
+from cabinets.parser import (
+    Parser,
+    register_extensions,
+    SUPPORTED_EXTENSIONS,
+)
 
-
-plugins.discover_built_in('cabinet')
-plugins.discover_built_in('parser')
-
-PLUGIN_PATHS = os.environ.get('PLUGIN_PATHS')
-if PLUGIN_PATHS:
-    plugins.discover_custom(*PLUGIN_PATHS.split(','))
+PLUGIN_PATH = os.environ.get('PLUGIN_PATH')
+plugins.discover_all(custom_plugin_path=PLUGIN_PATH)
 
 
 class InvalidURIError(Exception):
     pass
 
 
-def from_uri(uri) -> (CabinetBase, str):
+def from_uri(uri) -> (Cabinet, str):
     try:
         protocol, path = uri.split('://')
     except ValueError:
         raise InvalidURIError("Missing protocol identifier")
-    cabinet = SUPPORTED_PROTOCOLS.get(protocol)
-    if not cabinet:
+    cabinet_ = SUPPORTED_PROTOCOLS.get(protocol)
+    if not cabinet_:
         raise InvalidURIError(f"Unknown protocol '{protocol}'")
     if not path:
         raise InvalidURIError("Empty resource path")
-    return cabinet, path
+    return cabinet_, path
 
 
 def read(uri, raw=False):
-    cabinet, path = from_uri(uri)
-    return cabinet.read(path, raw=raw)
+    cabinet_, path = from_uri(uri)
+    return cabinet_.read(path, raw=raw)
 
 
 def create(uri, content, raw=False):
-    cabinet, path = from_uri(uri)
-    return cabinet.create(path, content, raw=raw)
+    cabinet_, path = from_uri(uri)
+    return cabinet_.create(path, content, raw=raw)
 
 
 def delete(uri):
-    cabinet, path = from_uri(uri)
-    return cabinet.delete(path)
+    cabinet_, path = from_uri(uri)
+    return cabinet_.delete(path)
