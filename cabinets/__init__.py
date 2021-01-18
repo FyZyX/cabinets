@@ -23,7 +23,8 @@ __all__ = [
     SUPPORTED_EXTENSIONS,
 ]
 
-PLUGIN_PATH = os.environ.get('PLUGIN_PATH')
+PLUGIN_PATH = os.environ.get('PLUGIN_PATH',
+                             os.path.join(os.getcwd(), 'cabinets'))
 plugins.discover_all(custom_plugin_path=PLUGIN_PATH)
 
 
