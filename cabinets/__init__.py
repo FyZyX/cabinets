@@ -13,6 +13,16 @@ from cabinets.parser import (
     SUPPORTED_EXTENSIONS,
 )
 
+__all__ = [
+    Cabinet,
+    CabinetError,
+    Parser,
+    register_protocols,
+    register_extensions,
+    SUPPORTED_PROTOCOLS,
+    SUPPORTED_EXTENSIONS,
+]
+
 PLUGIN_PATH = os.environ.get('PLUGIN_PATH')
 plugins.discover_all(custom_plugin_path=PLUGIN_PATH)
 
