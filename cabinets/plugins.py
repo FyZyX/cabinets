@@ -19,16 +19,16 @@ def discover(path, prefix=''):
     return modules
 
 
-def load_protocols(cls, protocols):
+def load_protocols(cls, protocols: dict):
     if not cls._protocols:
         error(f'No extensions registered to \'{cls.__name__}\'')
         return
-    for protocols in cls._protocols:
-        if protocols in protocols:
-            error(f'Extension \'{protocols}\' already registered  to '
-                  f'{protocols[protocols].__qualname__}')
+    for protocol in cls._protocols:
+        if protocol in protocols:
+            error(f'Extension \'{protocol}\' already registered  to '
+                  f'{protocols[protocol].__qualname__}')
             continue
-        protocols[protocols] = cls
+        protocols[protocol] = cls
     if protocols:
         info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
     else:
