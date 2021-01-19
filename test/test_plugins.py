@@ -2,6 +2,8 @@ import os
 from unittest import TestCase
 
 import cabinets
+from cabinets import register_protocols, CabinetError
+from test.test_cabinet import MockCabinet
 
 
 class TestPlugins(TestCase):
@@ -31,3 +33,21 @@ class TestPlugins(TestCase):
         self.assertIn('yaml', EXTENSIONS)
         self.assertIn('json', EXTENSIONS)
         self.assertIn('pickle', EXTENSIONS)
+
+
+class TestRegisterProtocols(TestCase):
+
+    def test_register_protocols_succeeds(self):
+        cls = register_protocols('mock')(MockCabinet)
+        self.assertIs(cls, MockCabinet)
+        self.assertIn('mock', MockCabinet._protocols)
+
+    def test_register_protocols_fails_on_subclass_check(self):
+        with self.assertRaises(CabinetError) as err:
+            register_protocols('mock')(int)
+        self.assertIn('not a subclass', str(err.exception))
+
+    def test_register_protocols_fails_on_attempt_to_register_instance(self):
+        with self.assertRaises(CabinetError) as err:
+            register_protocols('mock')(42)
+        self.assertIn('must be a class', str(err.exception))
