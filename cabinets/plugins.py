@@ -20,6 +20,7 @@ def discover_all(custom_plugin_path=None):
     discover(cabinets.cabinet.__path__, prefix=cabinets.cabinet.__name__)
     discover(cabinets.parser.__path__, prefix=cabinets.parser.__name__)
     if custom_plugin_path:
+        info(f'Using custom plugin path: {custom_plugin_path}')
         sys.path.insert(1, custom_plugin_path)
         for pkg in ['cabinet', 'parser']:
             path = os.path.join(custom_plugin_path, pkg)
