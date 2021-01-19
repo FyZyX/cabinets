@@ -19,17 +19,14 @@ def register_protocols(*protocols):
         except TypeError:
             raise CabinetError(
                 "Cannot register protocol: Decorated object must be a class")
-        for protocol in protocols:
-            if protocol in SUPPORTED_PROTOCOLS:
-                raise CabinetError(f"Protocol already associated with Cabinet "
-                                   f"'{SUPPORTED_PROTOCOLS[protocol].__qualname__}'")
-            SUPPORTED_PROTOCOLS[protocol] = cabinet
+        cabinet._protocols = set(protocols)
         return cabinet
 
     return decorate_cabinet
 
 
 class Cabinet(ABC):
+    _protocols = set()
 
     @classmethod
     @abstractmethod

@@ -26,7 +26,11 @@ __all__ = [
 PLUGIN_PATH = os.environ.get('PLUGIN_PATH', os.path.join(os.getcwd(), 'cabinets'))
 if PLUGIN_PATH == os.path.dirname(__file__):
     PLUGIN_PATH = None
-plugins.discover_all(custom_plugin_path=PLUGIN_PATH)
+
+PROTOCOLS, EXTENSIONS = plugins.discover_all(custom_plugin_path=PLUGIN_PATH)
+# TODO: May want to ensure that there is no overlap in keys
+SUPPORTED_PROTOCOLS.update(PROTOCOLS)
+SUPPORTED_EXTENSIONS.update(EXTENSIONS)
 
 
 class InvalidURIError(Exception):

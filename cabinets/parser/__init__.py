@@ -6,14 +6,14 @@ SUPPORTED_EXTENSIONS = {}
 
 def register_extensions(*file_types):
     def decorate_parser(parser: Parser):
-        for file_type in file_types:
-            SUPPORTED_EXTENSIONS[file_type] = parser
+        parser._extensions = set(file_types)
         return parser
 
     return decorate_parser
 
 
 class Parser(ABC):
+    _extensions = set()
 
     @classmethod
     def load(cls, path, content: bytes):
