@@ -1,5 +1,6 @@
 from cabinets import Cabinet, register_protocols
 
+
 @register_protocols('mock')
 class MockCabinet(Cabinet):
 
