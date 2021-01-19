@@ -10,6 +10,10 @@ import cabinets.parser
 from cabinets.logger import info, error
 
 
+class CabinetsPluginError(Exception):
+    pass
+
+
 def discover(path, prefix=''):
     plugins = pkgutil.iter_modules(path, prefix)
     modules = set()
@@ -21,36 +25,25 @@ def discover(path, prefix=''):
 
 def load_protocols(cls, protocols: dict):
     if not cls._protocols:
-        error(f'No extensions registered to \'{cls.__name__}\'')
-        return
+        raise CabinetsPluginError(f'No extensions registered to \'{cls.__name__}\'')
     for protocol in cls._protocols:
         if protocol in protocols:
-            error(f'Extension \'{protocol}\' already registered  to '
-                  f'{protocols[protocol].__qualname__}')
-            continue
+            raise CabinetsPluginError(f'Extension \'{protocol}\' already registered '
+                                      f'to {protocols[protocol].__qualname__}')
         protocols[protocol] = cls
-    if protocols:
-        info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
-    else:
-        error(f'Plugin failed: Could not load any extensions for {cls.__name__}')
+    info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
 
 
 # TODO: could be combined with `load_protocols` fairly easily
 def load_extensions(cls, extensions: dict):
     if not cls._extensions:
-        error(f'No extensions registered to \'{cls.__name__}\'')
-        return {}
+        raise CabinetsPluginError(f'No extensions registered to \'{cls.__name__}\'')
     for extension in cls._extensions:
         if extension in extensions:
-            error(f'Extension \'{extension}\' already registered  to '
-                  f'{extensions[extension].__qualname__}')
-            continue
+            raise CabinetsPluginError(f'Extension \'{extension}\' already registered '
+                                      f'to {extensions[extension].__qualname__}')
         extensions[extension] = cls
-    if extensions:
-        info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
-    else:
-        error(f'Plugin failed: Could not load any extensions for {cls.__name__}')
-    return extensions
+    info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
 
 
 def discover_all(custom_plugin_path=None):
