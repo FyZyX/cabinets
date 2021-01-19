@@ -7,7 +7,7 @@ import inspect
 
 import cabinets.cabinet
 import cabinets.parser
-from cabinets.logger import info, error
+from cabinets.logger import info
 
 
 class CabinetsPluginError(Exception):
