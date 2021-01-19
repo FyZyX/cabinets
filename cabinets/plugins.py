@@ -19,6 +19,39 @@ def discover(path, prefix=''):
     return modules
 
 
+def load_protocols(cls, protocols):
+    if not cls._protocols:
+        error(f'No extensions registered to \'{cls.__name__}\'')
+        return
+    for protocols in cls._protocols:
+        if protocols in protocols:
+            error(f'Extension \'{protocols}\' already registered  to '
+                  f'{protocols[protocols].__qualname__}')
+            continue
+        protocols[protocols] = cls
+    if protocols:
+        info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
+    else:
+        error(f'Plugin failed: Could not load any extensions for {cls.__name__}')
+
+
+def load_extensions(cls, extensions: dict):
+    if not cls._extensions:
+        error(f'No extensions registered to \'{cls.__name__}\'')
+        return {}
+    for extension in cls._extensions:
+        if extension in extensions:
+            error(f'Extension \'{extension}\' already registered  to '
+                  f'{extensions[extension].__qualname__}')
+            continue
+        extensions[extension] = cls
+    if extensions:
+        info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
+    else:
+        error(f'Plugin failed: Could not load any extensions for {cls.__name__}')
+    return extensions
+
+
 def discover_all(custom_plugin_path=None):
     modules = set()
     built_in_cabinet_modules = discover(cabinets.cabinet.__path__,
@@ -40,27 +73,9 @@ def discover_all(custom_plugin_path=None):
         for name, obj in inspect.getmembers(module):
             if not inspect.isclass(obj):
                 continue
-
             if issubclass(obj, cabinets.Cabinet) and obj is not cabinets.Cabinet:
-                if not obj._protocols:
-                    error(f'No protocols registered to \'{name}\'')
-                    continue
-                for protocol in obj._protocols:
-                    if protocol in PROTOCOLS:
-                        error(f'Protocol \'{protocol}\' already registered to '
-                              f'{PROTOCOLS[protocol].__qualname__}')
-                        continue
-                    PROTOCOLS[protocol] = obj
-                info(f"Loaded {cabinets.Cabinet.__name__} plugin '{name}'")
+                load_protocols(obj, PROTOCOLS)
             elif issubclass(obj, cabinets.Parser) and obj is not cabinets.Parser:
-                if not obj._extensions:
-                    error(f'No extensions registered to \'{name}\'')
-                    continue
-                for extension in obj._extensions:
-                    if extension in EXTENSIONS:
-                        error(f'Extension \'{extension}\' already registered  to '
-                              f'{EXTENSIONS[extension].__qualname__}')
-                        continue
-                    EXTENSIONS[extension] = obj
-                info(f"Loaded {cabinets.Parser.__name__} plugin '{name}'")
+                load_extensions(obj, EXTENSIONS)
+
     return PROTOCOLS, EXTENSIONS
