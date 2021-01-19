@@ -35,6 +35,7 @@ def load_protocols(cls, protocols: dict):
         error(f'Plugin failed: Could not load any extensions for {cls.__name__}')
 
 
+# TODO: could be combined with `load_protocols` fairly easily
 def load_extensions(cls, extensions: dict):
     if not cls._extensions:
         error(f'No extensions registered to \'{cls.__name__}\'')
