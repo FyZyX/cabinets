@@ -38,27 +38,29 @@ def discover_all(custom_plugin_path=None):
     EXTENSIONS = {}
     for module in modules:
         for name, obj in inspect.getmembers(module):
-            if inspect.isclass(obj):
-                if issubclass(obj, cabinets.Cabinet) and obj is not cabinets.Cabinet:
-                    if not obj._protocols:
-                        error(f'No protocols registered to \'{name}\'')
+            if not inspect.isclass(obj):
+                continue
+
+            if issubclass(obj, cabinets.Cabinet) and obj is not cabinets.Cabinet:
+                if not obj._protocols:
+                    error(f'No protocols registered to \'{name}\'')
+                    continue
+                for protocol in obj._protocols:
+                    if protocol in PROTOCOLS:
+                        error(f'Protocol \'{protocol}\' already registered to '
+                              f'{PROTOCOLS[protocol].__qualname__}')
                         continue
-                    for protocol in obj._protocols:
-                        if protocol in PROTOCOLS:
-                            error(f'Protocol \'{protocol}\' already registered to '
-                                  f'{PROTOCOLS[protocol].__qualname__}')
-                            continue
-                        PROTOCOLS[protocol] = obj
-                    info(f"Loaded {cabinets.Cabinet.__name__} plugin '{name}'")
-                elif issubclass(obj, cabinets.Parser) and obj is not cabinets.Parser:
-                    if not obj._extensions:
-                        error(f'No extensions registered to \'{name}\'')
+                    PROTOCOLS[protocol] = obj
+                info(f"Loaded {cabinets.Cabinet.__name__} plugin '{name}'")
+            elif issubclass(obj, cabinets.Parser) and obj is not cabinets.Parser:
+                if not obj._extensions:
+                    error(f'No extensions registered to \'{name}\'')
+                    continue
+                for extension in obj._extensions:
+                    if extension in EXTENSIONS:
+                        error(f'Extension \'{extension}\' already registered  to '
+                              f'{EXTENSIONS[extension].__qualname__}')
                         continue
-                    for extension in obj._extensions:
-                        if extension in EXTENSIONS:
-                            error(f'Extension \'{extension}\' already registered  to '
-                                  f'{EXTENSIONS[extension].__qualname__}')
-                            continue
-                        EXTENSIONS[extension] = obj
-                    info(f"Loaded {cabinets.Parser.__name__} plugin '{name}'")
+                    EXTENSIONS[extension] = obj
+                info(f"Loaded {cabinets.Parser.__name__} plugin '{name}'")
     return PROTOCOLS, EXTENSIONS
