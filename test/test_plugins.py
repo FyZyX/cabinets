@@ -2,8 +2,11 @@ import os
 from unittest import TestCase
 
 import cabinets
-from cabinets import register_protocols, CabinetError, Cabinet, Parser, \
-    register_extensions
+from cabinets import (register_protocols,
+                      register_extensions,
+                      CabinetError,
+                      Cabinet,
+                      Parser)
 from cabinets.parser import ParserError
 
 

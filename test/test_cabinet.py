@@ -9,12 +9,6 @@ from pyfakefs import fake_filesystem_unittest
 
 import cabinets
 from cabinets import InvalidURIError
-from cabinets import (
-    Cabinet,
-    CabinetError,
-    register_protocols,
-    SUPPORTED_PROTOCOLS,
-)
 from cabinets.cabinet.s3 import S3Cabinet
 
 
