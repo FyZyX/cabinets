@@ -29,28 +29,24 @@ with open('data.json', 'w') as fh:
 Read back and parse the file using `cabinets`:
 
 ```python
-from cabinets import Cabinets
+import cabinets
 
-new_obj = Cabinets.read('file://test.json')
-
-assert new_obj == obj
+new_obj = cabinets.read('file://test.json')
 ```
 
 That's it! The file is *loaded* and *parsed* in just one line.
 
 ### Write a file
 
-`Cabinet` also supports creating files. We can rewrite the first example using
-only `cabinets`.
+`cabinets` also supports creating files. We can rewrite the first example using only `cabinets`.
 
 ```python
-from cabinets import Cabinets
+import cabinets
 
 obj = {'test': 1}
+cabinets.create('file://test.json', obj)
 
-Cabinets.create('file://test.json', obj)
-
-new_obj = Cabinets.read('file://test.json')
+new_obj = cabinets.read('file://test.json')
 
 assert new_obj == obj
 ```
@@ -95,7 +91,6 @@ class FooParser(Parser):
     @classmethod
     def _dump_content(cls, data: Any) -> bytes:
         return serialize_foo(data)  # custom serialization logic
-
 ```
 
 Then to load a `test.foo` file you can simply use `Cabinet.read`. 
@@ -105,15 +100,14 @@ Then to load a `test.foo` file you can simply use `Cabinet.read`.
 > are imported somewhere before they are used.
 
 ```python
-from cabinets import Cabinets
+import cabinets
 
 # .foo file in local filesystem
-local_foo_data = Cabinets.read('file://test.foo')
+local_foo_data = cabinets.read('file://test.foo')
 
 # .foo file in S3
-s3_foo_data = Cabinets.read('s3://test.foo')
+s3_foo_data = cabinets.read('s3://test.foo')
 ```
-
 
 ## Protocol Configuration
 
@@ -130,8 +124,8 @@ S3Cabinet.set_configuration(region_name='us-west-2', aws_access_key_id=...)
 # use specific Cabinet to avoid protocol prefix
 S3Cabinet.read('bucket-in-us-west-2/test.json') 
 # or use generic Cabinet with protocol prefix
-from cabinets import Cabinets
-Cabinets.read('s3://bucket-us-west-2/test.json')
+import cabinets
+cabinets.read('s3://bucket-us-west-2/test.json')
 ```
 
 See the documentation of specific `Cabinet` classes for what configuration parameters are available.
