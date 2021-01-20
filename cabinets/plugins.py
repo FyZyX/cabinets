@@ -26,22 +26,24 @@ def discover(path, prefix=''):
 def load_to_cache(cls, cache: dict, allowed_type: type):
     if not issubclass(cls, allowed_type):
         raise CabinetsPluginError(
-            f"Plugin type not allowed: {cls.__name__} is not a subclass of {allowed_type.__name__}")
+            f"Plugin type not allowed: {cls.__name__} is not a subclass of "
+            f"{allowed_type.__name__}")
 
     if issubclass(cls, cabinets.Cabinet):
         keys = cls._protocols
     elif issubclass(cls, cabinets.Parser):
         keys = cls._extensions
     else:
-        raise CabinetsPluginError(f"Cannot load plugin: type {cls.__name__} is not allowed")
+        raise CabinetsPluginError(
+            f"Cannot load plugin: type {cls.__name__} is not allowed")
     if not keys:
         raise CabinetsPluginError(
             f"No {allowed_type.__name__}s registered to '{cls.__name__}'")
     for key in keys:
         if key in cache:
             raise CabinetsPluginError(
-                f"Plugin already registered: {allowed_type.__name__} '{key}' is currently associated "
-                f"with {cache[key].__qualname__}")
+                f"Plugin already registered: {allowed_type.__name__} '{key}' is "
+                f"currently associated with {cache[key].__qualname__}")
         cache[key] = cls
     info(f"Loaded {allowed_type.__name__} plugin '{cls.__name__}'")
 
