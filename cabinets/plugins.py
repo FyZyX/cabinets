@@ -25,10 +25,10 @@ def discover(path, prefix=''):
 
 def load_protocols(cls, protocols: dict):
     if not cls._protocols:
-        raise CabinetsPluginError(f"No extensions registered to '{cls.__name__}'")
+        raise CabinetsPluginError(f"No protocols registered to '{cls.__name__}'")
     for protocol in cls._protocols:
         if protocol in protocols:
-            raise CabinetsPluginError(f'Extension \'{protocol}\' already registered '
+            raise CabinetsPluginError(f'Protocol \'{protocol}\' already registered '
                                       f'to {protocols[protocol].__qualname__}')
         protocols[protocol] = cls
     info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
