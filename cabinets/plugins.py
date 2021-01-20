@@ -25,7 +25,7 @@ def discover(path, prefix=''):
 
 def load_protocols(cls, protocols: dict):
     if not cls._protocols:
-        raise CabinetsPluginError(f'No extensions registered to \'{cls.__name__}\'')
+        raise CabinetsPluginError(f"No extensions registered to '{cls.__name__}'")
     for protocol in cls._protocols:
         if protocol in protocols:
             raise CabinetsPluginError(f'Extension \'{protocol}\' already registered '
@@ -37,11 +37,11 @@ def load_protocols(cls, protocols: dict):
 # TODO: could be combined with `load_protocols` fairly easily
 def load_extensions(cls, extensions: dict):
     if not cls._extensions:
-        raise CabinetsPluginError(f'No extensions registered to \'{cls.__name__}\'')
+        raise CabinetsPluginError(f"No extensions registered to '{cls.__name__}'")
     for extension in cls._extensions:
         if extension in extensions:
-            raise CabinetsPluginError(f'Extension \'{extension}\' already registered '
-                                      f'to {extensions[extension].__qualname__}')
+            raise CabinetsPluginError(f"Extension '{extension}' already registered "
+                                      f"to {extensions[extension].__qualname__}")
         extensions[extension] = cls
     info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
 
@@ -61,8 +61,7 @@ def discover_all(custom_plugin_path=None):
             custom_modules = discover((path,))
             modules.update(custom_modules)
 
-    PROTOCOLS = {}
-    EXTENSIONS = {}
+    PROTOCOLS, EXTENSIONS = {}, {}
     for module in modules:
         for name, obj in inspect.getmembers(module):
             if not inspect.isclass(obj):
