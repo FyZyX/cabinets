@@ -23,27 +23,27 @@ def discover(path, prefix=''):
     return modules
 
 
-def load_protocols(cls, protocols: dict):
-    if not cls._protocols:
-        raise CabinetsPluginError(f"No protocols registered to '{cls.__name__}'")
-    for protocol in cls._protocols:
-        if protocol in protocols:
-            raise CabinetsPluginError(f'Protocol \'{protocol}\' already registered '
-                                      f'to {protocols[protocol].__qualname__}')
-        protocols[protocol] = cls
-    info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
+def load_to_cache(cls, cache: dict, allowed_type: type):
+    if not issubclass(cls, allowed_type):
+        raise CabinetsPluginError(
+            f'Plugin type must be subclass of {allowed_type.__name__}')
 
-
-# TODO: could be combined with `load_protocols` fairly easily
-def load_extensions(cls, extensions: dict):
-    if not cls._extensions:
-        raise CabinetsPluginError(f"No extensions registered to '{cls.__name__}'")
-    for extension in cls._extensions:
-        if extension in extensions:
-            raise CabinetsPluginError(f"Extension '{extension}' already registered "
-                                      f"to {extensions[extension].__qualname__}")
-        extensions[extension] = cls
-    info(f"Loaded {cabinets.Parser.__name__} plugin '{cls.__name__}'")
+    if issubclass(cls, cabinets.Cabinet):
+        keys = cls._protocols
+    elif issubclass(cls, cabinets.Parser):
+        keys = cls._extensions
+    else:
+        raise CabinetsPluginError(f'Cannot load type {cls.__name__} to plugin cache')
+    if not keys:
+        raise CabinetsPluginError(
+            f"No {allowed_type.__name__}s registered to '{cls.__name__}'")
+    for key in keys:
+        if key in cache:
+            raise CabinetsPluginError(
+                f'{allowed_type.__name__} \'{key}\' already registered to '
+                f'{cache[key].__qualname__}')
+        cache[key] = cls
+    info(f"Loaded {allowed_type.__name__} plugin '{cls.__name__}'")
 
 
 def discover_all(custom_plugin_path=None):
@@ -67,8 +67,8 @@ def discover_all(custom_plugin_path=None):
             if not inspect.isclass(obj):
                 continue
             if issubclass(obj, cabinets.Cabinet) and obj is not cabinets.Cabinet:
-                load_protocols(obj, PROTOCOLS)
+                load_to_cache(obj, PROTOCOLS, cabinets.Cabinet)
             elif issubclass(obj, cabinets.Parser) and obj is not cabinets.Parser:
-                load_extensions(obj, EXTENSIONS)
+                load_to_cache(obj, EXTENSIONS, cabinets.Parser)
 
     return PROTOCOLS, EXTENSIONS

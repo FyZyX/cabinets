@@ -73,36 +73,36 @@ class TestPlugins(TestCase):
     def test_load_protocols(self):
         register_protocols('mock')(MockCabinet)
         protocols = {}
-        cabinets.plugins.load_protocols(MockCabinet, protocols)
+        cabinets.plugins.load_to_cache(MockCabinet, protocols, cabinets.Cabinet)
         self.assertDictEqual(protocols, {'mock': MockCabinet})
 
     def test_load_protocols_fails_on_no_protocols(self):
         with self.assertRaises(cabinets.plugins.CabinetsPluginError):
-            cabinets.plugins.load_protocols(MockCabinet, {})
+            cabinets.plugins.load_to_cache(MockCabinet, {}, cabinets.Cabinet)
 
     def test_load_protocols_fails_on_repeated_protocol(self):
         register_protocols('mock')(MockCabinet)
         protocols = {}
-        cabinets.plugins.load_protocols(MockCabinet, protocols)
+        cabinets.plugins.load_to_cache(MockCabinet, protocols, cabinets.Cabinet)
         with self.assertRaises(cabinets.plugins.CabinetsPluginError):
-            cabinets.plugins.load_protocols(MockCabinet, protocols)
+            cabinets.plugins.load_to_cache(MockCabinet, protocols, cabinets.Cabinet)
 
     def test_load_extensions(self):
         register_extensions('mock')(MockParser)
         extensions = {}
-        cabinets.plugins.load_extensions(MockParser, extensions)
+        cabinets.plugins.load_to_cache(MockParser, extensions, cabinets.Parser)
         self.assertDictEqual(extensions, {'mock': MockParser})
 
     def test_load_extensions_fails_on_no_extensions(self):
         with self.assertRaises(cabinets.plugins.CabinetsPluginError):
-            cabinets.plugins.load_extensions(MockParser, {})
+            cabinets.plugins.load_to_cache(MockParser, {}, cabinets.Parser)
 
     def test_load_extensions_fails_on_repeated_extension(self):
         register_extensions('mock')(MockParser)
         extensions = {}
-        cabinets.plugins.load_extensions(MockParser, extensions)
+        cabinets.plugins.load_to_cache(MockParser, extensions, cabinets.Parser)
         with self.assertRaises(cabinets.plugins.CabinetsPluginError):
-            cabinets.plugins.load_extensions(MockParser, extensions)
+            cabinets.plugins.load_to_cache(MockParser, extensions, cabinets.Parser)
 
 
 class TestRegisterProtocols(TestCase):
