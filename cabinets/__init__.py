@@ -7,7 +7,6 @@ from cabinets.cabinet import (
     register_protocols,
     SUPPORTED_PROTOCOLS,
 )
-from cabinets.cabinet.file import FileCabinet
 from cabinets.logger import debug
 from cabinets.parser import (
     Parser,
