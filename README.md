@@ -32,7 +32,7 @@ Read back and parse the file using `cabinets`:
 ```python
 import cabinets
 
-new_obj = cabinets.read('file://test.json')
+new_obj = cabinets.read('test.json')
 ```
 
 That's it! The file is *loaded* and *parsed* in just one line.
@@ -46,12 +46,50 @@ only `cabinets`.
 import cabinets
 
 obj = {'test': 1}
-cabinets.create('file://test.json', obj)
+cabinets.create('test.json', obj)
 
-new_obj = cabinets.read('file://test.json')
+new_obj = cabinets.read('test.json')
 
 assert new_obj == obj
 ```
+
+### Reading and Writing with Other Protocols
+
+In the previous examples we saw `read` and `write` operations on local files using the
+default *file* protocol. However, one of the main benefits of using `cabinets` is the
+flexibility to read and write files using multiple different protocols, with a common
+interface.
+
+In addition to supporting the local filesystem protocol, `cabinets`
+natively supports file operations on AWS S3:
+
+```python
+import cabinets
+
+# Read JSON file from your filesystem
+local_obj = cabinets.read('file://test.json')
+
+# Write that object to a file in AWS S3
+cabinets.create('s3://test.json', local_obj)
+
+# Read back the same file from AWS S3
+remote_obj = cabinets.read('s3://test.json')
+
+assert local_obj == remote_obj
+```
+
+The above example will read a file from the local filesystem and create a new file
+containing the same data, at the same path in S3.
+
+By prefixing the *path* with `{protocol}://` we specify how and where `cabinets` should
+look for a file. Using `file://` (default if none specified) tells `cabinets` to use *
+path* on the local filesystem. Using `s3://` on the other hand instructs `cabinets` to
+perform operations against that *path* in AWS S3.
+
+> NOTE: The `S3Cabinet` may require initial configuration for the `s3` protocol to
+> function properly. See [Protocol Configuration](#protocol-configuration) for details.
+
+See all the natively supported protocols [below](#protocols).
 
 ## Built-in Protocols and Parsers
 
@@ -66,40 +104,6 @@ assert new_obj == obj
 - JSON (`.json`)
 - Python Pickle (`.pickle`)
 - CSV *(beta)* (`.csv`)
-
-## Custom Protocols and Parsers
-
-`cabinets` is designed to allow complete extensibility in adding new protocols and
-parsers. Just because your desired storage platform or file format is not listed above,
-doesn't mean you can't use it with `cabinets`!
-
-### Adding a Parser
-
-Adding a new parser is as simple as subclassing `cabinets.parser.Parser` and registers
-associated file extensions.
-
-```python
-from typing import Any
-from cabinets.parser import Parser, register_extensions
-
-
-@register_extensions('foo', 'bar')
-class FooParser(Parser):
-
-    @classmethod
-    def _load_content(cls, content: bytes) -> Any:
-        return deserialize_foo(content)  # custom deserialization logic
-
-    @classmethod
-    def _dump_content(cls, data: Any) -> bytes:
-        return serialize_foo(data)  # custom serialization logic
-```
-
-Then to load a `test.foo` file you can simply use `Cabinet.read`.
-
-> **NOTE**: In order for the extension to be registered, the class definition must be
-> run at least once. Make sure the modules where your custom `Parser` classes are defined
-> are imported somewhere before they are used.
 
 ```python
 import cabinets
@@ -134,21 +138,22 @@ cabinets.read('s3://bucket-us-west-2/test.json')
 See the documentation of specific `Cabinet` classes for what configuration parameters
 are available.
 
-## Plugins
+## Custom Protocols and Parsers
 
-`cabinets` supports the ability to register custom `Cabinet` and `Parser` classes on any
-protocol prefixes or file extensions.
+`cabinets` is designed to allow complete extensibility in adding new protocols and
+parsers. Just because your desired storage platform or file format is not listed above,
+doesn't mean you can't use it with `cabinets`!
 
 ### Adding Cabinets
 
-New protocol connection can be added by subclassing abstract base class `Cabinet`, and
+New protocol connections can be added by subclassing abstract base class `Cabinet`, and
 registering the class to one or more protocol identifiers:
 
 ```python
 from cabinets import Cabinet, register_protocols
 
 
-@register_protocols('Foo')
+@register_protocols('foo')
 class FooCabinet(Cabinet):
 
     @classmethod
@@ -173,11 +178,12 @@ class FooCabinet(Cabinet):
 
 ```
 
-Here we begin to define a new `Cabinet`, and register it to the protocol
-identifier `example`. Once this class is loaded, any `cabinets` function calls using
-the `foo://` prefix will be processed with this class. This means if we called:
+Here we define a `FooCabinet`, and register it to the protocol identifier `foo`. Once
+this class is loaded, any `cabinets` function calls using the `foo://` prefix will be
+processed with this class. This means if we called:
 
 ```python
+import cabinets
 from ... import FooCabinet  # ensure FooCabinet is loaded
 
 cabinets.read('foo://example.json')
@@ -185,6 +191,10 @@ cabinets.read('foo://example.json')
 
 The first call that occurs will be `FooCabinet._read_content('foo.json)`, and that
 result is then parsed by the `JSONParser` before being returned.
+
+> **NOTE**: In order for the protocols to be registered, the class definition must be
+> run at least once. Make sure the modules where your custom `Cabinet` classes are defined
+> are imported somewhere before they are used, OR use the built in [Plugin](#plugins) system.
 
 ### Adding Parsers
 
@@ -195,7 +205,7 @@ from cabinets.parser import Parser, register_extensions
 
 
 @register_extensions('bar')
-class MockParser(Parser):
+class BarParser(Parser):
     @classmethod
     def load_content(cls, content: bytes):
         # Parse bytes from "bar" file format into a Python object
@@ -221,7 +231,7 @@ This statement is roughly equivalent to:
 BarParser.load_content(FooCabinet._read_content('foo.bar'))
 ```
 
-and should return a Python object from your `Foo` protocol, using your `Bar` parser!
+and should return a Python object from your `Foo` cabinet, using your `Bar` parser!
 
 ### Loading Plugins
 
