@@ -7,6 +7,8 @@ from cabinets.cabinet import (
     register_protocols,
     SUPPORTED_PROTOCOLS,
 )
+from cabinets.cabinet.file import FileCabinet
+from cabinets.logger import debug
 from cabinets.parser import (
     Parser,
     register_extensions,
@@ -41,7 +43,9 @@ def from_uri(uri) -> (Cabinet, str):
     try:
         protocol, path = uri.split('://')
     except ValueError:
-        raise InvalidURIError("Missing protocol identifier")
+        debug("No protocol identifier specified: using 'file'")
+        protocol = FileCabinet
+        path = uri
     cabinet_ = SUPPORTED_PROTOCOLS.get(protocol)
     if not cabinet_:
         raise InvalidURIError(f"Unknown protocol '{protocol}'")
