@@ -44,7 +44,7 @@ def from_uri(uri) -> (Cabinet, str):
         protocol, path = uri.split('://')
     except ValueError:
         debug("No protocol identifier specified: using 'file'")
-        protocol = FileCabinet
+        protocol = 'file'
         path = uri
     cabinet_ = SUPPORTED_PROTOCOLS.get(protocol)
     if not cabinet_:
