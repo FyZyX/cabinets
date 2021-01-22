@@ -228,7 +228,7 @@ cabinets.read('foo://example.bar')
 This statement is roughly equivalent to:
 
 ```python
-BarParser.load_content(FooCabinet._read_content('foo.bar'))
+BarParser.load_content(FooCabinet.read_content('foo.bar'))
 ```
 
 and should return a Python object from your `Foo` cabinet, using your `Bar` parser!
