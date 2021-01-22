@@ -55,13 +55,13 @@ assert new_obj == obj
 
 ### Reading and Writing with Other Protocols
 
-In the previous examples we saw `read` and `write` operations on local files using the
-default *file* protocol. However, one of the main benefits of using `cabinets` is the
-flexibility to read and write files using multiple different protocols, with a common
-interface.
+Using `cabinets` allows you to interact with multiple file storage protocols
+depending on the URI you specify. In the previous examples, we used
+`read()` and `write()` to operate within our local file system; that's
+because `cabinets` assumes we're using the `file://` protocol by default.
+Luckily, accessing other storage systems is just as easy!
 
-In addition to supporting the local filesystem protocol, `cabinets`
-natively supports file operations on AWS S3:
+For example, operating on a file on AWS S3 is done exactly the same way:
 
 ```python
 import cabinets
@@ -117,9 +117,9 @@ s3_foo_data = cabinets.read('s3://test.foo')
 
 ## Protocol Configuration
 
-Some storage platform protocols may require some configuration parameters to be set
-before they can be used. Each `Cabinet` subclass can expose
-a `set_configuration(**config)` classmethod to take care of any required initial setup.
+Some storage platform protocols may require additional configuration parameters to be set
+before they can be used. Each `Cabinet` subclass can expose a `set_configuration(**config)`
+class method to take care of any required initial setup.
 
 ```python
 from cabinets.cabinet.s3 import S3Cabinet
@@ -236,33 +236,32 @@ and should return a Python object from your `Foo` cabinet, using your `Bar` pars
 ### Loading Plugins
 
 As mentioned in the example above, your custom `Cabinet` and `Parser` classes must be
-executed in order to be added to the internal cache `cabinets` uses for extension and
-protocol lookup. If your custom classes are imported before any `cabinets` functions are
-used then this won't be an issue. However, in many use cases there is no reason to
+executed in order to be added to the internal cache `cabinets` uses for protocol and
+extension lookup. If your custom classes are imported before any `cabinets` functions are
+use then, this won't be an issue. However, in many use cases there is no reason to
 import those classes aside from usage with `cabinets` functions. Instead of requiring
 each class to be imported manually at the start of your program,
 `cabinets` can search a specified path for new `Cabinet` and `Parser` classes, and load
 them automatically.
 
-If the environment variable `PLUGIN_PATH` is specified, `cabinets`
-will search that path for subdirectories called `cabinet` and `parser`. Modules residing
-within those directories will be searched for `Cabinet` and `Parser` subclasses,
+Specifying the `PLUGIN_PATH` environment variable will cause `cabinets` to search
+for subdirectories called `cabinet` and `parser` in that path. Modules residing
+within those directories will be searched for `Cabinet` and `Parser` subclasses
 respectively.
 
 ```
 └─ PLUGIN_PATH
     |
     └───cabinet
-    │   │   custom_cabinet.py   
+    │   │   foo_cabinet.py
     └───parser
-    │   │   custom_parser_1.py
-    │   │   custom_parser_2.py
+    │   │   bar_parser.py
+    │   │   baz_parser.py
 ```
 
-If the above `FooCabinet` and `BarParser` classes are placed in
-`custom_cabinet.py` and `custom_parser_1.py` (or `custom_parser_2.py`) they will be
-loaded and registered to their specified protocols/extensions without needing to be
-referenced anywhere else in the program.
+If the above `FooCabinet` and `BarParser` classes are placed in `foo_cabinet.py`
+and `bar_parser.py`, they will be loaded and registered to their specified
+cache without needing to be referenced anywhere else in the program.
 
 ## Contributing
 
@@ -272,6 +271,5 @@ by submitting a pull request, creating an issue, or contacting the authors direc
 
 ### Authors and Contributors:
 
-* Lucas Lofaro *(Co-Author)*: [lucasmlofaro@gmail.com](mailto:lucasmlofaro@gmail.com)
-* Sam Hollenbach *(
-  Co-Author)*: [samhollenbach@gmail.com](mailto:samhollenbach@gmail.com) 
+- Lucas Lofaro *(Co-Author)*: [lucasmlofaro@gmail.com](mailto:lucasmlofaro@gmail.com)
+- Sam Hollenbach *(Co-Author)*: [samhollenbach@gmail.com](mailto:samhollenbach@gmail.com) 
