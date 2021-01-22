@@ -9,10 +9,11 @@ from pyfakefs import fake_filesystem_unittest
 
 import cabinets
 from cabinets import InvalidURIError
+from cabinets.cabinet.file import FileCabinet
 from cabinets.cabinet.s3 import S3Cabinet
 
 
-class TestFileSystemCabinet(fake_filesystem_unittest.TestCase):
+class TestFileCabinet(fake_filesystem_unittest.TestCase):
     fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
     def setUp(self):
@@ -102,10 +103,11 @@ class TestS3Cabinet(unittest.TestCase):
 
 class TestURI(unittest.TestCase):
 
-    def test_cabinet_from_uri_fails_on_missing_protocol(self):
+    def test_cabinet_from_uri_missing_protocol_defaults_to_file(self):
         uri = 'path/to/file'
-        with self.assertRaises(InvalidURIError):
-            cabinets.from_uri(uri)
+        cabinet, path = cabinets.from_uri(uri)
+        self.assertEqual(cabinet, FileCabinet)
+        self.assertEqual(path, uri)
 
     def test_cabinet_from_uri_fails_on_unknown_protocol(self):
         uri = 'foo://path/to/file'

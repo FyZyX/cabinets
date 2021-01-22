@@ -31,7 +31,7 @@ Read back and parse the file using `cabinets`:
 ```python
 import cabinets
 
-new_obj = cabinets.read('file://test.json')
+new_obj = cabinets.read('test.json')
 ```
 
 That's it! The file is *loaded* and *parsed* in just one line.
@@ -44,9 +44,9 @@ That's it! The file is *loaded* and *parsed* in just one line.
 import cabinets
 
 obj = {'test': 1}
-cabinets.create('file://test.json', obj)
+cabinets.create('test.json', obj)
 
-new_obj = cabinets.read('file://test.json')
+new_obj = cabinets.read('test.json')
 
 assert new_obj == obj
 ```
