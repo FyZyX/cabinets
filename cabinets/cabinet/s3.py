@@ -17,7 +17,7 @@ class S3Cabinet(Cabinet):
                                   aws_session_token=aws_session_token)
 
     @classmethod
-    def _read_content(cls, path) -> bytes:
+    def read_content(cls, path) -> bytes:
         bucket, *key = path.split('/')
         if not key:
             raise ValueError('S3 path needs bucket')
@@ -31,7 +31,7 @@ class S3Cabinet(Cabinet):
             raise ex
 
     @classmethod
-    def _create_content(cls, path, content):
+    def create_content(cls, path, content):
         bucket, *key = path.split('/')
         key = '/'.join(key)
         info(f"Uploading {key} to {bucket}")
@@ -43,7 +43,7 @@ class S3Cabinet(Cabinet):
             return False
 
     @classmethod
-    def _delete_content(cls, path):
+    def delete_content(cls, path):
         bucket, *key = path.split('/')
         key = '/'.join(key)
         info(f"Uploading {key} to {bucket}")

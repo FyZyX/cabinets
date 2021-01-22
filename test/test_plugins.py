@@ -16,15 +16,15 @@ class MockCabinet(Cabinet):
         return NotImplemented
 
     @classmethod
-    def _read_content(cls, path) -> bytes:
+    def read_content(cls, path) -> bytes:
         return NotImplemented
 
     @classmethod
-    def _create_content(cls, path, content):
+    def create_content(cls, path, content):
         return NotImplemented
 
     @classmethod
-    def _delete_content(cls, path):
+    def delete_content(cls, path):
         return NotImplemented
 
 

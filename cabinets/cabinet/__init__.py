@@ -40,32 +40,32 @@ class Cabinet(ABC):
     @classmethod
     def read(cls, path, raw=False):
         if raw:
-            return cls._read_content(path)
+            return cls.read_content(path)
         else:
-            return Parser.load(path, cls._read_content(path))
+            return Parser.load(path, cls.read_content(path))
 
     @classmethod
     def create(cls, path, content, raw=False):
         if raw:
-            return cls._create_content(path, content)
+            return cls.create_content(path, content)
         else:
-            return cls._create_content(path, Parser.dump(path, content))
+            return cls.create_content(path, Parser.dump(path, content))
 
     @classmethod
     def delete(cls, path):
-        cls._delete_content(path)
+        cls.delete_content(path)
 
     @classmethod
     @abstractmethod
-    def _read_content(cls, path) -> bytes:
+    def read_content(cls, path) -> bytes:
         pass  # pragma: no cover
 
     @classmethod
     @abstractmethod
-    def _create_content(cls, path, content):
+    def create_content(cls, path, content):
         pass  # pragma: no cover
 
     @classmethod
     @abstractmethod
-    def _delete_content(cls, path):
+    def delete_content(cls, path):
         pass  # pragma: no cover
