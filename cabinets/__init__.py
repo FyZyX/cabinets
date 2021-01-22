@@ -7,7 +7,7 @@ from cabinets.cabinet import (
     register_protocols,
     SUPPORTED_PROTOCOLS,
 )
-from cabinets.logger import debug
+from cabinets.logger import info
 from cabinets.parser import (
     Parser,
     register_extensions,
