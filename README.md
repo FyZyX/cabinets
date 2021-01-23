@@ -162,17 +162,17 @@ class FooCabinet(Cabinet):
         ...
 
     @classmethod
-    def _read_content(cls, path: str) -> bytes:
+    def read_content(cls, path: str) -> bytes:
         # Custom logic for reading bytes from a path using "foo" protocol
         ...
 
     @classmethod
-    def _create_content(cls, path: str, content: bytes):
+    def create_content(cls, path: str, content: bytes):
         # Custom logic for writing bytes to a path  using "foo" protocol
         ...
 
     @classmethod
-    def _delete_content(cls, path):
+    def delete_content(cls, path):
         # Custom logic for deleting the object at a path  using "foo" protocol
         ...
 
@@ -189,7 +189,7 @@ from ... import FooCabinet  # ensure FooCabinet is loaded
 cabinets.read('foo://example.json')
 ```
 
-The first call that occurs will be `FooCabinet._read_content('foo.json)`, and that
+The first call that occurs will be `FooCabinet.read_content('foo.json)`, and that
 result is then parsed by the `JSONParser` before being returned.
 
 > **NOTE**: In order for the protocols to be registered, the class definition must be
