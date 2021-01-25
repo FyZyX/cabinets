@@ -77,8 +77,8 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
     def test_create_plain_text(self):
         protocol, filename = 'file', 'tmp/sample.txt'
         content = "I am sample text!\nThis file has more than one line.\n" \
-                   "Hey look, a panda.\n\nその鶏のサイズを見てください\nNow it's a " \
-                   "new paragraph. This line has two sentences.\n🤯🦄\n"
+                  "Hey look, a panda.\n\nその鶏のサイズを見てください\nNow it's a " \
+                  "new paragraph. This line has two sentences.\n🤯🦄\n"
         cabinets.create(f'{protocol}://{filename}', content)
         with open(filename) as fh:
             data = fh.read()
