@@ -1,0 +1,7 @@
+I am sample text!
+This file has more than one line.
+Hey look, a panda.
+
+その鶏のサイズを見てください
+Now it's a new paragraph. This line has two sentences.
+🤯🦄
