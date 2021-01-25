@@ -1,5 +1,3 @@
-import json
-
 from cabinets.parser import register_extensions, Parser
 
 
