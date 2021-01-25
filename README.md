@@ -104,6 +104,7 @@ See all the natively supported protocols [below](#protocols).
 - JSON (`.json`)
 - Python Pickle (`.pickle`)
 - CSV *(beta)* (`.csv`)
+- TXT (`.txt`)
 
 ```python
 import cabinets
