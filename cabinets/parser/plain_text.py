@@ -6,8 +6,8 @@ class PlainTextParser(Parser):
 
     @classmethod
     def load_content(cls, content):
-        return content.decode()
+        return content.decode(encoding='utf-8')
 
     @classmethod
-    def dump_content(cls, data, encoding='utf-8'):
-        return bytes(data, encoding=encoding)
+    def dump_content(cls, data):
+        return bytes(data, encoding='utf-8')
