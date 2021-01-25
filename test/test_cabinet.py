@@ -65,6 +65,25 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
         result = cabinets.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
 
+    def test_read_plain_text(self):
+        protocol = 'file'
+        filename = os.path.join(self.fixture_path, 'sample.txt')
+        data = cabinets.read(f'{protocol}://{filename}')
+        expected = "I am sample text!\nThis file has more than one line.\n" \
+                   "Hey look, a panda.\n\nNow it's a new paragraph. This line has " \
+                   "two sentences.\n"
+        self.assertEqual(expected, data)
+
+    def test_create_plain_text(self):
+        protocol, filename = 'file', 'tmp/sample.txt'
+        content = "I am sample text!\nThis file has more than one line.\n" \
+                  "Hey look, a panda.\n\nNow it's a new paragraph. This line has " \
+                  "two sentences.\n"
+        cabinets.create(f'{protocol}://{filename}', content)
+        with open(filename) as fh:
+            data = fh.read()
+        self.assertEqual(content, data)
+
 
 @mock_s3
 class TestS3Cabinet(unittest.TestCase):
