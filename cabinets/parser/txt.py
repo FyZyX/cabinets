@@ -11,5 +11,5 @@ class PlainTextParser(Parser):
         return content.decode()
 
     @classmethod
-    def dump_content(cls, data):
-        return json.dumps(data)
+    def dump_content(cls, data, encoding='utf-8'):
+        return bytes(data, encoding=encoding)
