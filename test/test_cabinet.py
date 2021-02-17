@@ -8,7 +8,7 @@ from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
 
 import cabinets
-from cabinets import InvalidURIError
+from cabinets import InvalidURIError, CabinetError
 from cabinets.cabinet.file_cabinet import FileCabinet
 from cabinets.cabinet.s3_cabinet import S3Cabinet
 
@@ -92,6 +92,10 @@ class TestTopLevelConfiguration(unittest.TestCase):
         cabinets.set_configuration('s3', region_name='us-west-2')
         self.assertIsNotNone(S3Cabinet.client)
         self.assertEqual(S3Cabinet.client.meta.region_name, 'us-west-2')
+
+    def test_set_configuration_region_bad_protocol(self):
+        with self.assertRaises(CabinetError):
+            cabinets.set_configuration('s4', region_name='us-west-2')
 
 
 @mock_s3
