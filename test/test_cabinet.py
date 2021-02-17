@@ -9,8 +9,8 @@ from pyfakefs import fake_filesystem_unittest
 
 import cabinets
 from cabinets import InvalidURIError
-from cabinets.cabinet.file import FileCabinet
-from cabinets.cabinet.s3 import S3Cabinet
+from cabinets.cabinet.file_cabinet import FileCabinet
+from cabinets.cabinet.s3_cabinet import S3Cabinet
 
 
 class TestFileCabinet(fake_filesystem_unittest.TestCase):

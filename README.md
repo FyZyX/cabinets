@@ -123,7 +123,7 @@ before they can be used. Each `Cabinet` subclass can expose a `set_configuration
 class method to take care of any required initial setup.
 
 ```python
-from cabinets.cabinet.s3 import S3Cabinet
+from cabinets.cabinet.s3_cabinet import S3Cabinet
 
 # set the AWS S3 region to us-west-2 and specify an access key
 S3Cabinet.set_configuration(region_name='us-west-2', aws_access_key_id=...)
