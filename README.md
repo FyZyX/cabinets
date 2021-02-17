@@ -139,6 +139,20 @@ cabinets.read('s3://bucket-us-west-2/test.json')
 See the documentation of specific `Cabinet` classes for what configuration parameters
 are available.
 
+Additionally, there is a top-level `set_configuration()` function so that importing
+specific `Cabinet` subclasses is not required. Simply pass the desired protocol as the
+first argument. 
+
+```python
+import cabinets
+
+# set the AWS S3 region to us-west-2 and specify an access key
+cabinets.set_configuration('s3', region_name='us-west-2', aws_access_key_id=...)
+
+# use generic Cabinet with protocol prefix
+cabinets.read('s3://bucket-us-west-2/test.json')
+```
+
 ## Custom Protocols and Parsers
 
 `cabinets` is designed to allow complete extensibility in adding new protocols and
