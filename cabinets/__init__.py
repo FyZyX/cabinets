@@ -52,16 +52,16 @@ def from_uri(uri) -> (Cabinet, str):
     return cabinet_, path
 
 
-def read(uri, raw=False):
+def read(uri, raw=False, **kwargs):
     cabinet_, path = from_uri(uri)
-    return cabinet_.read(path, raw=raw)
+    return cabinet_.read(path, raw=raw, **kwargs)
 
 
-def create(uri, content, raw=False):
+def create(uri, content, raw=False, **kwargs):
     cabinet_, path = from_uri(uri)
-    return cabinet_.create(path, content, raw=raw)
+    return cabinet_.create(path, content, raw=raw, **kwargs)
 
 
-def delete(uri):
+def delete(uri, **kwargs):
     cabinet_, path = from_uri(uri)
     return cabinet_.delete(path)
