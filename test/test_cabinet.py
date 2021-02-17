@@ -86,6 +86,15 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
 
 
 @mock_s3
+class TestTopLevelConfiguration(unittest.TestCase):
+
+    def test_set_configuration_region(self):
+        cabinets.set_configuration('s3', region_name='us-west-2')
+        self.assertIsNotNone(S3Cabinet.client)
+        self.assertEqual(S3Cabinet.client.meta.region_name, 'us-west-2')
+
+
+@mock_s3
 class TestS3Cabinet(unittest.TestCase):
 
     def setUp(self) -> None:
