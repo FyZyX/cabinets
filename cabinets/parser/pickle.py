@@ -7,9 +7,9 @@ from cabinets.parser import register_extensions, Parser
 class PickleParser(Parser):
 
     @classmethod
-    def load_content(cls, content):
+    def load_content(cls, content, **kwargs):
         return pickle.loads(content)
 
     @classmethod
-    def dump_content(cls, data):
+    def dump_content(cls, data, **kwargs):
         return pickle.dumps(data)
