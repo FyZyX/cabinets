@@ -5,9 +5,9 @@ from cabinets.parser import register_extensions, Parser
 class PlainTextParser(Parser):
 
     @classmethod
-    def load_content(cls, content):
-        return content.decode(encoding='utf-8')
+    def load_content(cls, content, encoding='utf-8', **kwargs):
+        return content.decode(encoding=encoding)
 
     @classmethod
-    def dump_content(cls, data):
-        return bytes(data, encoding='utf-8')
+    def dump_content(cls, data, encoding='utf-8', **kwargs):
+        return bytes(data, encoding=encoding)

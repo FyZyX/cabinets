@@ -33,21 +33,21 @@ class Parser(ABC):
     _extensions = set()
 
     @classmethod
-    def load(cls, path, content: bytes):
+    def load(cls, path, content: bytes, **kwargs):
         filepath, ext = os.path.abspath(path).split('.')
-        return SUPPORTED_EXTENSIONS[ext].load_content(content)
+        return SUPPORTED_EXTENSIONS[ext].load_content(content, **kwargs)
 
     @classmethod
     @abstractmethod
-    def load_content(cls, content: bytes):
+    def load_content(cls, content: bytes, **kwargs):
         pass  # pragma: no cover
 
     @classmethod
-    def dump(cls, path, data: Any):
+    def dump(cls, path, data: Any, **kwargs):
         filepath, ext = os.path.abspath(path).split('.')
-        return SUPPORTED_EXTENSIONS[ext].dump_content(data)
+        return SUPPORTED_EXTENSIONS[ext].dump_content(data, **kwargs)
 
     @classmethod
     @abstractmethod
-    def dump_content(cls, data: Any):
+    def dump_content(cls, data: Any, **kwargs):
         pass  # pragma: no cover

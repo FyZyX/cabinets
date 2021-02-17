@@ -8,11 +8,11 @@ from cabinets.parser import register_extensions, Parser
 class CSVParser(Parser):
 
     @classmethod
-    def load_content(cls, content):
+    def load_content(cls, content, **kwargs):
         return list(csv.reader(content.decode('utf-8').splitlines()))
 
     @classmethod
-    def dump_content(cls, data):
+    def dump_content(cls, data, **kwargs):
         csv_buffer = StringIO()
         if type(data[0]) == dict:
             # TODO: Grabbing the field names the first list item is kinda wonky
