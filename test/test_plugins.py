@@ -16,25 +16,25 @@ class MockCabinet(Cabinet):
         return NotImplemented
 
     @classmethod
-    def read_content(cls, path) -> bytes:
+    def read_content(cls, path, **kwargs) -> bytes:
         return NotImplemented
 
     @classmethod
-    def create_content(cls, path, content):
+    def create_content(cls, path, content, **kwargs):
         return NotImplemented
 
     @classmethod
-    def delete_content(cls, path):
+    def delete_content(cls, path, **kwargs):
         return NotImplemented
 
 
 class MockParser(Parser):
     @classmethod
-    def load_content(cls, content: bytes):
+    def load_content(cls, content: bytes, **kwargs):
         return NotImplemented
 
     @classmethod
-    def dump_content(cls, data):
+    def dump_content(cls, data, **kwargs):
         return NotImplemented
 
 

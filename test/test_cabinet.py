@@ -84,6 +84,25 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
             data = fh.read()
         self.assertEqual(content, data)
 
+    def test_read_plain_text_single_byte_encoding(self):
+        protocol = 'file'
+        filename = os.path.join(self.fixture_path, 'sample_single_byte.txt')
+        data = cabinets.read(f'{protocol}://{filename}', encoding='iso-8859-1')
+        expected = "I am sample text!\nThis file has more than one line.\n" \
+                   "Hey look, a panda.\n\nNow it's a new paragraph. This line has " \
+                   "two sentences.\n"
+        self.assertEqual(expected, data)
+
+    def test_create_plain_text_single_byte_encoding(self):
+        protocol, filename = 'file', 'tmp/sample_single_byte.txt'
+        content = "I am sample text!\nThis file has more than one line.\n" \
+                  "Hey look, a panda.\n\nNow it's a new paragraph. This line has " \
+                  "two sentences.\n"
+        cabinets.create(f'{protocol}://{filename}', content, encoding='iso-8859-1')
+        with open(filename) as fh:
+            data = fh.read()
+        self.assertEqual(content, data)
+
 
 @mock_s3
 class TestS3Cabinet(unittest.TestCase):
