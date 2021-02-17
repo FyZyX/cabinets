@@ -8,9 +8,9 @@ from moto import mock_s3
 from pyfakefs import fake_filesystem_unittest
 
 import cabinets
-from cabinets import InvalidURIError
-from cabinets.cabinet.file import FileCabinet
-from cabinets.cabinet.s3 import S3Cabinet
+from cabinets import InvalidURIError, CabinetError
+from cabinets.cabinet.file_cabinet import FileCabinet
+from cabinets.cabinet.s3_cabinet import S3Cabinet
 
 
 class TestFileCabinet(fake_filesystem_unittest.TestCase):
@@ -102,6 +102,19 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
         with open(filename) as fh:
             data = fh.read()
         self.assertEqual(content, data)
+
+
+@mock_s3
+class TestTopLevelConfiguration(unittest.TestCase):
+
+    def test_set_configuration_region(self):
+        cabinets.set_configuration('s3', region_name='us-west-2')
+        self.assertIsNotNone(S3Cabinet.client)
+        self.assertEqual(S3Cabinet.client.meta.region_name, 'us-west-2')
+
+    def test_set_configuration_region_bad_protocol(self):
+        with self.assertRaises(CabinetError):
+            cabinets.set_configuration('s4', region_name='us-west-2')
 
 
 @mock_s3

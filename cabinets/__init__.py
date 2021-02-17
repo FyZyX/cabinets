@@ -52,6 +52,13 @@ def from_uri(uri) -> (Cabinet, str):
     return cabinet_, path
 
 
+def set_configuration(protocol, **kwargs):
+    cabinet_cls = SUPPORTED_PROTOCOLS.get(protocol)
+    if not cabinet_cls:
+        raise CabinetError(f"Unsupported protocol: '{protocol}'")
+    return cabinet_cls.set_configuration(**kwargs)
+
+
 def read(uri, raw=False, **kwargs):
     cabinet_, path = from_uri(uri)
     return cabinet_.read(path, raw=raw, **kwargs)
