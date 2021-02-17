@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -33,7 +34,7 @@ class Parser(ABC):
 
     @classmethod
     def load(cls, path, content: bytes):
-        filepath, ext = path.split('.')
+        filepath, ext = os.path.abspath(path).split('.')
         return SUPPORTED_EXTENSIONS[ext].load_content(content)
 
     @classmethod
@@ -43,7 +44,7 @@ class Parser(ABC):
 
     @classmethod
     def dump(cls, path, data: Any):
-        filepath, ext = path.split('.')
+        filepath, ext = os.path.abspath(path).split('.')
         return SUPPORTED_EXTENSIONS[ext].dump_content(data)
 
     @classmethod
