@@ -54,6 +54,12 @@ def from_uri(uri) -> (Cabinet, str):
 
 
 def set_configuration(protocol, **kwargs):
+    """
+    Set configuration parameters for a Cabinet
+
+    :param str protocol: Protocol identifier of Cabinet
+    :param dict kwargs: Configuration parameters to pass
+    """
     cabinet_cls = SUPPORTED_PROTOCOLS.get(protocol)
     if not cabinet_cls:
         raise CabinetError(f"Unsupported protocol: '{protocol}'")
@@ -87,9 +93,10 @@ def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True, **k
         parsing using given parser
     :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
-    :return: None TODO: define standard return type
+    :return: None
     """
     cabinet_, path = from_uri(uri)
+    # TODO: define standard return type
     return cabinet_.create(path, content, parser=parser, **kwargs)
 
 
