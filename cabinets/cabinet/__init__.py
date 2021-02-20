@@ -93,7 +93,7 @@ class Cabinet(ABC):
             parsing using given parser
         :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
             methods
-        :return: None TODO: define standard return type
+        :return: None
         """
         cabinet_kwargs, parser_kwargs = _separate_kwargs(**kwargs)
         if parser is True:
