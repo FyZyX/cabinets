@@ -55,10 +55,10 @@ def from_uri(uri) -> (Cabinet, str):
 
 def set_configuration(protocol, **kwargs):
     """
-    Set configuration parameters for a Cabinet
+    Set configuration parameters for a Cabinet.
 
     :param str protocol: Protocol identifier of Cabinet
-    :param dict kwargs: Configuration parameters to pass
+    :param dict kwargs: Configuration parameters passed to delegate method
     """
     cabinet_cls = SUPPORTED_PROTOCOLS.get(protocol)
     if not cabinet_cls:
