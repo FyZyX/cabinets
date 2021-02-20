@@ -31,6 +31,22 @@ def register_protocols(*protocols):
     return decorate_cabinet
 
 
+def _separate_kwargs(**kwargs):
+    cabinet_kwargs = {}
+    parser_kwargs = {}
+    for k, v in kwargs.items():
+        if k.startswith('parser_'):
+            k = k.replace('parser_', '', 1)
+            parser_kwargs[k] = v
+        elif k.startswith('cabinet_'):
+            k = k.replace('cabinet_', '', 1)
+            cabinet_kwargs[k] = v
+        else:
+            parser_kwargs[k] = v
+            cabinet_kwargs[k] = v
+    return cabinet_kwargs, parser_kwargs
+
+
 class Cabinet(ABC):
     _protocols = set()
 
@@ -52,15 +68,17 @@ class Cabinet(ABC):
             methods
         :return Any: Parsed object read from file
         """
+        cabinet_kwargs, parser_kwargs = _separate_kwargs(**kwargs)
+        content = cls.read_content(path, **cabinet_kwargs)
         if parser is True:
-            return Parser.load(path, cls.read_content(path, **kwargs), **kwargs)
+            return Parser.load(path, content, **parser_kwargs)
         elif parser is False:
-            return cls.read_content(path, **kwargs)
+            return content
         elif inspect.isclass(parser) and issubclass(parser, Parser):
-            return parser.load_content(cls.read_content(path, **kwargs), **kwargs)
-
-        raise CabinetError(
-            'Argument `parser` must be `True`, `False` or a `Parser` subclass')
+            return parser.load_content(content, **parser_kwargs)
+        else:
+            raise CabinetError(
+                'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
     @classmethod
     def create(cls, path: str, content: Any, parser: Union[bool, Type[Parser]] = True,
@@ -77,15 +95,18 @@ class Cabinet(ABC):
             methods
         :return: None TODO: define standard return type
         """
+        cabinet_kwargs, parser_kwargs = _separate_kwargs(**kwargs)
         if parser is True:
-            return cls.create_content(path, Parser.dump(path, content, **kwargs))
+            payload = Parser.dump(path, content, **parser_kwargs)
         elif parser is False:
-            return cls.create_content(path, content)
+            payload = content
         elif inspect.isclass(parser) and issubclass(parser, Parser):
-            return cls.create_content(path, parser.dump_content(content, **kwargs))
+            payload = parser.dump_content(content, **parser_kwargs)
+        else:
+            raise CabinetError(
+                'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
-        raise CabinetError(
-            'Argument `parser` must be `True`, `False` or a `Parser` subclass')
+        return cls.create_content(path, payload, **cabinet_kwargs)
 
     @classmethod
     def delete(cls, path: str, **kwargs):
