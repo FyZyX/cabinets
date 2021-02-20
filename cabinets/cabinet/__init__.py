@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Union, Type
 
 from cabinets.parser import Parser
 
@@ -38,18 +39,34 @@ class Cabinet(ABC):
         pass  # pragma: no cover
 
     @classmethod
-    def read(cls, path, raw=False, **kwargs):
-        if raw:
-            return cls.read_content(path)
-        else:
-            return Parser.load(path, cls.read_content(path), **kwargs)
+    def read(cls, path, parser: Union[bool, Type[Parser]] = True, **kwargs):
+        if parser is True:
+            return Parser.load(path, cls.read_content(path, **kwargs), **kwargs)
+        if parser is False:
+            return cls.read_content(path, **kwargs)
+        try:
+            if issubclass(parser, Parser):
+                return parser.load_content(cls.read_content(path, **kwargs), **kwargs)
+        except TypeError:
+            pass
+
+        raise CabinetError(
+            'Argument `parser` must be True, False or a `Parser` subclass')
 
     @classmethod
-    def create(cls, path, content, raw=False, **kwargs):
-        if raw:
-            return cls.create_content(path, content)
-        else:
+    def create(cls, path, content, parser: Union[bool, Type[Parser]] = True, **kwargs):
+        if parser is True:
             return cls.create_content(path, Parser.dump(path, content, **kwargs))
+        if parser is False:
+            return cls.create_content(path, content)
+        try:
+            if issubclass(parser, Parser):
+                return cls.create_content(path, parser.dump_content(content, **kwargs))
+        except TypeError:
+            pass
+
+        raise CabinetError(
+            'Argument `parser` must be True, False or a `Parser` subclass')
 
     @classmethod
     def delete(cls, path, **kwargs):

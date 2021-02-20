@@ -59,14 +59,14 @@ def set_configuration(protocol, **kwargs):
     return cabinet_cls.set_configuration(**kwargs)
 
 
-def read(uri, raw=False, **kwargs):
+def read(uri, parser=True, **kwargs):
     cabinet_, path = from_uri(uri)
-    return cabinet_.read(path, raw=raw, **kwargs)
+    return cabinet_.read(path, parser=parser, **kwargs)
 
 
-def create(uri, content, raw=False, **kwargs):
+def create(uri, content, parser=True, **kwargs):
     cabinet_, path = from_uri(uri)
-    return cabinet_.create(path, content, raw=raw, **kwargs)
+    return cabinet_.create(path, content, parser=parser, **kwargs)
 
 
 def delete(uri, **kwargs):
