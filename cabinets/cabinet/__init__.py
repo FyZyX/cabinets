@@ -42,9 +42,9 @@ class Cabinet(ABC):
     @classmethod
     def read(cls, path: str, parser: Union[bool, Type[Parser]] = True, **kwargs) -> Any:
         """
-        Read file content
+        Read file contents using a specific protocol.
 
-        :param str path: Path to file
+        :param str path: Path to file within cabinet
         :param Union[bool, Type[Parser]] parser: `True` for parsing using default
             file extension Parser, `False` for no parsing, a `Parser` subclass for
             parsing using given parser
@@ -66,9 +66,9 @@ class Cabinet(ABC):
     def create(cls, path: str, content: Any, parser: Union[bool, Type[Parser]] = True,
                **kwargs):
         """
-        Create a file
+        Create a file using a specific protocol.
 
-        :param str path: Path to file
+        :param str path: Path to file within cabinet
         :param Any content: Content to write
         :param Union[bool, Type[Parser]] parser: `True` for parsing using default
             file extension Parser, `False` for no parsing, a `Parser` subclass for
@@ -90,9 +90,9 @@ class Cabinet(ABC):
     @classmethod
     def delete(cls, path: str, **kwargs):
         """
-        Delete a file
+        Delete a file using a specific protocol.
 
-        :param str path: Path to file
+        :param str path: Path to file within cabinet
         :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
             methods
         """

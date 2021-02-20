@@ -61,9 +61,9 @@ def set_configuration(protocol, **kwargs):
 
 def read(uri, parser=True, **kwargs):
     """
-    Read file content
+    Read file contents.
 
-    :param str path: Path to file
+    :param str path: Path to file including protocol identifier
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
         parsing using given parser
@@ -77,9 +77,9 @@ def read(uri, parser=True, **kwargs):
 
 def create(uri, content, parser=True, **kwargs):
     """
-    Create a file
+    Create a file.
 
-    :param str path: Path to file
+    :param str path: Path to file including protocol identifier
     :param Any content: Content to write
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
@@ -94,9 +94,9 @@ def create(uri, content, parser=True, **kwargs):
 
 def delete(uri, **kwargs):
     """
-    Delete a file
+    Delete a file.
 
-    :param str path: Path to file
+    :param str path: Path to file including protocol identifier
     :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     """
