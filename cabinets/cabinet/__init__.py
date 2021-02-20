@@ -51,7 +51,7 @@ class Cabinet(ABC):
             pass
 
         raise CabinetError(
-            'Argument `parser` must be True, False or a `Parser` subclass')
+            'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
     @classmethod
     def create(cls, path, content, parser: Union[bool, Type[Parser]] = True, **kwargs):
@@ -66,7 +66,7 @@ class Cabinet(ABC):
             pass
 
         raise CabinetError(
-            'Argument `parser` must be True, False or a `Parser` subclass')
+            'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
     @classmethod
     def delete(cls, path, **kwargs):
