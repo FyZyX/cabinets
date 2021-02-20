@@ -1,4 +1,5 @@
 import os
+from typing import Union, Type, Any
 
 from cabinets import plugins
 from cabinets.cabinet import (
@@ -53,22 +54,59 @@ def from_uri(uri) -> (Cabinet, str):
 
 
 def set_configuration(protocol, **kwargs):
+    """
+    Set configuration parameters for a Cabinet.
+
+    :param str protocol: Protocol identifier of Cabinet
+    :param dict kwargs: Configuration parameters passed to delegate method
+    """
     cabinet_cls = SUPPORTED_PROTOCOLS.get(protocol)
     if not cabinet_cls:
         raise CabinetError(f"Unsupported protocol: '{protocol}'")
     return cabinet_cls.set_configuration(**kwargs)
 
 
-def read(uri, raw=False, **kwargs):
+def read(uri: str, parser: Union[bool, Type[Parser]] = True, **kwargs):
+    """
+    Read file contents.
+
+    :param str uri: Path to file including protocol identifier prefix (protocol://)
+    :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+        file extension Parser, `False` for no parsing, a `Parser` subclass for
+        parsing using given parser
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+        methods
+    :return Any: Parsed object read from file
+    """
     cabinet_, path = from_uri(uri)
-    return cabinet_.read(path, raw=raw, **kwargs)
+    return cabinet_.read(path, parser=parser, **kwargs)
 
 
-def create(uri, content, raw=False, **kwargs):
+def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True, **kwargs):
+    """
+    Create a file.
+
+    :param str uri: Path to file including protocol identifier prefix (protocol://)
+    :param Any content: Content to write
+    :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+        file extension Parser, `False` for no parsing, a `Parser` subclass for
+        parsing using given parser
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+        methods
+    :return: None
+    """
     cabinet_, path = from_uri(uri)
-    return cabinet_.create(path, content, raw=raw, **kwargs)
+    # TODO: define standard return type
+    return cabinet_.create(path, content, parser=parser, **kwargs)
 
 
-def delete(uri, **kwargs):
+def delete(uri: str, **kwargs):
+    """
+    Delete a file.
+
+    :param str uri: Path to file including protocol identifier prefix (protocol://)
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+        methods
+    """
     cabinet_, path = from_uri(uri)
-    return cabinet_.delete(path)
+    return cabinet_.delete(path, **kwargs)

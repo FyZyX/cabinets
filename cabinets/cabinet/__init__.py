@@ -1,4 +1,6 @@
+import inspect
 from abc import ABC, abstractmethod
+from typing import Union, Type, Any
 
 from cabinets.parser import Parser
 
@@ -29,6 +31,22 @@ def register_protocols(*protocols):
     return decorate_cabinet
 
 
+def _separate_kwargs(**kwargs):
+    cabinet_kwargs = {}
+    parser_kwargs = {}
+    for k, v in kwargs.items():
+        if k.startswith('parser_'):
+            k = k.replace('parser_', '', 1)
+            parser_kwargs[k] = v
+        elif k.startswith('cabinet_'):
+            k = k.replace('cabinet_', '', 1)
+            cabinet_kwargs[k] = v
+        else:
+            parser_kwargs[k] = v
+            cabinet_kwargs[k] = v
+    return cabinet_kwargs, parser_kwargs
+
+
 class Cabinet(ABC):
     _protocols = set()
 
@@ -38,21 +56,67 @@ class Cabinet(ABC):
         pass  # pragma: no cover
 
     @classmethod
-    def read(cls, path, raw=False, **kwargs):
-        if raw:
-            return cls.read_content(path)
+    def read(cls, path: str, parser: Union[bool, Type[Parser]] = True, **kwargs) -> Any:
+        """
+        Read file contents using a specific protocol.
+
+        :param str path: Path to file within cabinet
+        :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+            file extension Parser, `False` for no parsing, a `Parser` subclass for
+            parsing using given parser
+        :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+            methods
+        :return Any: Parsed object read from file
+        """
+        cabinet_kwargs, parser_kwargs = _separate_kwargs(**kwargs)
+        content = cls.read_content(path, **cabinet_kwargs)
+        if parser is True:
+            return Parser.load(path, content, **parser_kwargs)
+        elif parser is False:
+            return content
+        elif inspect.isclass(parser) and issubclass(parser, Parser):
+            return parser.load_content(content, **parser_kwargs)
         else:
-            return Parser.load(path, cls.read_content(path), **kwargs)
+            raise CabinetError(
+                'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
     @classmethod
-    def create(cls, path, content, raw=False, **kwargs):
-        if raw:
-            return cls.create_content(path, content)
+    def create(cls, path: str, content: Any, parser: Union[bool, Type[Parser]] = True,
+               **kwargs):
+        """
+        Create a file using a specific protocol.
+
+        :param str path: Path to file within cabinet
+        :param Any content: Content to write
+        :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+            file extension Parser, `False` for no parsing, a `Parser` subclass for
+            parsing using given parser
+        :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+            methods
+        :return: None
+        """
+        cabinet_kwargs, parser_kwargs = _separate_kwargs(**kwargs)
+        if parser is True:
+            payload = Parser.dump(path, content, **parser_kwargs)
+        elif parser is False:
+            payload = content
+        elif inspect.isclass(parser) and issubclass(parser, Parser):
+            payload = parser.dump_content(content, **parser_kwargs)
         else:
-            return cls.create_content(path, Parser.dump(path, content, **kwargs))
+            raise CabinetError(
+                'Argument `parser` must be `True`, `False` or a `Parser` subclass')
+
+        return cls.create_content(path, payload, **cabinet_kwargs)
 
     @classmethod
-    def delete(cls, path, **kwargs):
+    def delete(cls, path: str, **kwargs):
+        """
+        Delete a file using a specific protocol.
+
+        :param str path: Path to file within cabinet
+        :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+            methods
+        """
         cls.delete_content(path, **kwargs)
 
     @classmethod
