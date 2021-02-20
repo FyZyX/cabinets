@@ -12,7 +12,7 @@ class MockTextParser(Parser):
         return {'mock-parser': content.decode('utf-8')}
 
 
-class TestFileCabinet(fake_filesystem_unittest.TestCase):
+class TestParserArgument(fake_filesystem_unittest.TestCase):
     fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
     def setUp(self):
