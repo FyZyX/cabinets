@@ -67,8 +67,7 @@ def read(uri, parser=True, **kwargs):
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
         parsing using given parser
-    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser`
-    subclass
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     :return Any: Parsed object read from file
     """
@@ -85,8 +84,7 @@ def create(uri, content, parser=True, **kwargs):
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
         parsing using given parser
-    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser`
-    subclass
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     :return: None TODO: define standard return type
     """
@@ -99,8 +97,7 @@ def delete(uri, **kwargs):
     Delete a file
 
     :param str path: Path to file
-    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser`
-    subclass
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     """
     cabinet_, path = from_uri(uri)
