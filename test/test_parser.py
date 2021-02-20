@@ -1,4 +1,6 @@
 import os
+import json
+from typing import Any
 
 from pyfakefs import fake_filesystem_unittest
 
@@ -7,6 +9,12 @@ from cabinets import Parser
 
 
 class MockTextParser(Parser):
+
+    @classmethod
+    def dump_content(cls, data: Any, **kwargs):
+        data['mock'] = 'parser'
+        return json.dumps(data)
+
     @classmethod
     def load_content(cls, content: bytes, **kwargs):
         return {'mock-parser': content.decode('utf-8')}
@@ -19,7 +27,7 @@ class TestParserArgument(fake_filesystem_unittest.TestCase):
         self.setUpPyfakefs()
         self.fs.add_real_directory(self.fixture_path)
 
-    def test_read_plain_text_standard_parser(self):
+    def test_read_plain_text_default_parser(self):
         protocol = 'file'
         filename = os.path.join(self.fixture_path, 'sample_small.txt')
         data = cabinets.read(f'{protocol}://{filename}', parser=True)
@@ -42,3 +50,33 @@ class TestParserArgument(fake_filesystem_unittest.TestCase):
         expected = {'mock-parser': "I am sample text!"}
         self.assertIsInstance(data, dict)
         self.assertDictEqual(expected, data)
+
+    def test_create_json_default_parser(self):
+        protocol, filename = 'file', 'tmp/sample.json'
+        content = {"hello": "world"}
+        cabinets.create(f'{protocol}://{filename}', content, parser=True)
+        with open(filename) as fh:
+            data = fh.read()
+        self.assertEqual('{"hello": "world"}', data)
+
+    def test_create_json_default_parser_fails(self):
+        protocol, filename = 'file', 'tmp/sample.json'
+        content = bytes('{"test":"bytes"}', encoding="utf-8")
+        with self.assertRaises(TypeError):
+            cabinets.create(f'{protocol}://{filename}', content, parser=True)
+
+    def test_create_json_no_parser(self):
+        protocol, filename = 'file', 'tmp/sample.json'
+        content = bytes('{"test":"bytes"}', encoding="utf-8")
+        cabinets.create(f'{protocol}://{filename}', content, parser=False)
+        with open(filename) as fh:
+            data = json.load(fh)
+        self.assertEqual({"test": "bytes"}, data)
+
+    def test_create_json_custom_parser(self):
+        protocol, filename = 'file', 'tmp/sample.json'
+        content = {"hello": "world"}
+        cabinets.create(f'{protocol}://{filename}', content, parser=MockTextParser)
+        with open(filename) as fh:
+            data = json.load(fh)
+        self.assertDictEqual({"hello": "world", "mock": "parser"}, data)
