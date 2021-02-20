@@ -60,15 +60,48 @@ def set_configuration(protocol, **kwargs):
 
 
 def read(uri, parser=True, **kwargs):
+    """
+    Read file content
+
+    :param str path: Path to file
+    :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+        file extension Parser, `False` for no parsing, a `Parser` subclass for
+        parsing using given parser
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser`
+    subclass
+        methods
+    :return Any: Parsed object read from file
+    """
     cabinet_, path = from_uri(uri)
     return cabinet_.read(path, parser=parser, **kwargs)
 
 
 def create(uri, content, parser=True, **kwargs):
+    """
+    Create a file
+
+    :param str path: Path to file
+    :param Any content: Content to write
+    :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+        file extension Parser, `False` for no parsing, a `Parser` subclass for
+        parsing using given parser
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser`
+    subclass
+        methods
+    :return: None TODO: define standard return type
+    """
     cabinet_, path = from_uri(uri)
     return cabinet_.create(path, content, parser=parser, **kwargs)
 
 
 def delete(uri, **kwargs):
+    """
+    Delete a file
+
+    :param str path: Path to file
+    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser`
+    subclass
+        methods
+    """
     cabinet_, path = from_uri(uri)
-    return cabinet_.delete(path)
+    return cabinet_.delete(path, **kwargs)

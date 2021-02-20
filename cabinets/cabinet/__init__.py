@@ -1,6 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
-from typing import Union, Type
+from typing import Union, Type, Any
 
 from cabinets.parser import Parser
 
@@ -40,7 +40,18 @@ class Cabinet(ABC):
         pass  # pragma: no cover
 
     @classmethod
-    def read(cls, path, parser: Union[bool, Type[Parser]] = True, **kwargs):
+    def read(cls, path: str, parser: Union[bool, Type[Parser]] = True, **kwargs) -> Any:
+        """
+        Read file content
+
+        :param str path: Path to file
+        :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+            file extension Parser, `False` for no parsing, a `Parser` subclass for
+            parsing using given parser
+        :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+            methods
+        :return Any: Parsed object read from file
+        """
         if parser is True:
             return Parser.load(path, cls.read_content(path, **kwargs), **kwargs)
         elif parser is False:
@@ -52,7 +63,20 @@ class Cabinet(ABC):
             'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
     @classmethod
-    def create(cls, path, content, parser: Union[bool, Type[Parser]] = True, **kwargs):
+    def create(cls, path: str, content: Any, parser: Union[bool, Type[Parser]] = True,
+               **kwargs):
+        """
+        Create a file
+
+        :param str path: Path to file
+        :param Any content: Content to write
+        :param Union[bool, Type[Parser]] parser: `True` for parsing using default
+            file extension Parser, `False` for no parsing, a `Parser` subclass for
+            parsing using given parser
+        :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+            methods
+        :return: None TODO: define standard return type
+        """
         if parser is True:
             return cls.create_content(path, Parser.dump(path, content, **kwargs))
         elif parser is False:
@@ -64,7 +88,14 @@ class Cabinet(ABC):
             'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
     @classmethod
-    def delete(cls, path, **kwargs):
+    def delete(cls, path: str, **kwargs):
+        """
+        Delete a file
+
+        :param str path: Path to file
+        :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+            methods
+        """
         cls.delete_content(path, **kwargs)
 
     @classmethod
