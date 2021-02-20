@@ -31,24 +31,24 @@ class TestParserArgument(fake_filesystem_unittest.TestCase):
         protocol = 'file'
         filename = os.path.join(self.fixture_path, 'sample_small.txt')
         data = cabinets.read(f'{protocol}://{filename}', parser=True)
-        expected = "I am sample text!"
         self.assertIsInstance(data, str)
+        expected = "I am sample text!"
         self.assertEqual(expected, data)
 
     def test_read_plain_text_no_parser(self):
         protocol = 'file'
         filename = os.path.join(self.fixture_path, 'sample_small.txt')
         data = cabinets.read(f'{protocol}://{filename}', parser=False)
-        expected = bytes("I am sample text!", encoding='utf-8')
         self.assertIsInstance(data, bytes)
+        expected = bytes("I am sample text!", encoding='utf-8')
         self.assertEqual(expected, data)
 
     def test_read_plain_text_custom_parser(self):
         protocol = 'file'
         filename = os.path.join(self.fixture_path, 'sample_small.txt')
         data = cabinets.read(f'{protocol}://{filename}', parser=MockTextParser)
-        expected = {'mock-parser': "I am sample text!"}
         self.assertIsInstance(data, dict)
+        expected = {'mock-parser': "I am sample text!"}
         self.assertDictEqual(expected, data)
 
     def test_create_json_default_parser(self):
