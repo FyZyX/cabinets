@@ -55,7 +55,7 @@ class Cabinet(ABC):
     def create(cls, path, content, parser: Union[bool, Type[Parser]] = True, **kwargs):
         if parser is True:
             return cls.create_content(path, Parser.dump(path, content, **kwargs))
-        if parser is False:
+        elif parser is False:
             return cls.create_content(path, content)
         elif inspect.isclass(parser) and issubclass(parser, Parser):
             return cls.create_content(path, parser.dump_content(content, **kwargs))
