@@ -1,3 +1,4 @@
+import inspect
 from abc import ABC, abstractmethod
 from typing import Union, Type
 
@@ -42,13 +43,10 @@ class Cabinet(ABC):
     def read(cls, path, parser: Union[bool, Type[Parser]] = True, **kwargs):
         if parser is True:
             return Parser.load(path, cls.read_content(path, **kwargs), **kwargs)
-        if parser is False:
+        elif parser is False:
             return cls.read_content(path, **kwargs)
-        try:
-            if issubclass(parser, Parser):
-                return parser.load_content(cls.read_content(path, **kwargs), **kwargs)
-        except TypeError:
-            pass
+        elif inspect.isclass(parser) and issubclass(parser, Parser):
+            return parser.load_content(cls.read_content(path, **kwargs), **kwargs)
 
         raise CabinetError(
             'Argument `parser` must be `True`, `False` or a `Parser` subclass')
@@ -59,11 +57,8 @@ class Cabinet(ABC):
             return cls.create_content(path, Parser.dump(path, content, **kwargs))
         if parser is False:
             return cls.create_content(path, content)
-        try:
-            if issubclass(parser, Parser):
-                return cls.create_content(path, parser.dump_content(content, **kwargs))
-        except TypeError:
-            pass
+        elif inspect.isclass(parser) and issubclass(parser, Parser):
+            return cls.create_content(path, parser.dump_content(content, **kwargs))
 
         raise CabinetError(
             'Argument `parser` must be `True`, `False` or a `Parser` subclass')
