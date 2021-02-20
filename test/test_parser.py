@@ -83,11 +83,11 @@ class TestParserArgument(fake_filesystem_unittest.TestCase):
 
     def test_read_text_non_parser_custom_parser_raises(self):
         with self.assertRaises(cabinets.CabinetError):
-            cabinets.read('file://tmp/sample.txt', parser=str)
+            cabinets.read(os.path.join(self.fixture_path, 'sample.txt'), parser=str)
 
     def test_read_text_object_custom_parser_raises(self):
         with self.assertRaises(cabinets.CabinetError):
-            cabinets.read('file://tmp/sample.txt', parser=1)
+            cabinets.read(os.path.join(self.fixture_path, 'sample.txt'), parser=1)
 
     def test_create_text_non_parser_custom_parser_raises(self):
         with self.assertRaises(cabinets.CabinetError):
