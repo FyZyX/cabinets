@@ -46,7 +46,7 @@ class S3Cabinet(Cabinet):
     def delete_content(cls, path, **kwargs):
         bucket, *key = path.split('/')
         key = '/'.join(key)
-        info(f"Uploading {key} to {bucket}")
+        info(f"Deleting {key} from {bucket}")
         try:
             cls.client.delete_object(Bucket=bucket, Key=key)
             return True
