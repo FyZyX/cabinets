@@ -7,7 +7,7 @@ import inspect
 
 import cabinets.cabinet
 import cabinets.parser
-from cabinets.logger import info
+from cabinets.logger import debug
 
 
 class CabinetsPluginError(Exception):
@@ -45,7 +45,7 @@ def load_to_cache(cls, cache: dict, allowed_type: type):
                 f"Plugin already registered: {allowed_type.__name__} '{key}' is "
                 f"currently associated with {cache[key].__qualname__}")
         cache[key] = cls
-    info(f"Loaded {allowed_type.__name__} plugin '{cls.__name__}'")
+    debug(f"Loaded {allowed_type.__name__} plugin '{cls.__name__}'")
 
 
 def discover_all(custom_plugin_path=None):
