@@ -1,0 +1,1 @@
+I am sample text from a file with dots (.) in the path!

@@ -81,6 +81,14 @@ class TestParserArgument(fake_filesystem_unittest.TestCase):
             data = json.load(fh)
         self.assertDictEqual({"hello": "world", "mock": "parser"}, data)
 
+    def test_read_plain_text_default_parser_dot_path(self):
+        protocol = 'file'
+        filename = os.path.join(self.fixture_path, 'dotpath.example', 'dot.sample.txt')
+        data = cabinets.read(f'{protocol}://{filename}', parser=True)
+        self.assertIsInstance(data, str)
+        expected = "I am sample text from a file with dots (.) in the path!"
+        self.assertEqual(expected, data)
+
     def test_read_text_custom_parser_raises(self):
         with self.assertRaises(cabinets.CabinetError):
             cabinets.read(os.path.join(self.fixture_path, 'sample.txt'), parser=str)
