@@ -33,8 +33,16 @@ class Parser(ABC):
     _extensions = set()
 
     @classmethod
+    def _split_path(cls, path: str) -> (str, str):
+        path = os.path.abspath(path)
+        dot_index = path.rfind('.')
+        filepath = path[:dot_index]
+        ext = path[dot_index + 1:]
+        return filepath, ext
+
+    @classmethod
     def load(cls, path, content: bytes, **kwargs):
-        filepath, ext = os.path.abspath(path).split('.')
+        _, ext = cls._split_path(path)
         return SUPPORTED_EXTENSIONS[ext].load_content(content, **kwargs)
 
     @classmethod
@@ -44,7 +52,7 @@ class Parser(ABC):
 
     @classmethod
     def dump(cls, path, data: Any, **kwargs):
-        filepath, ext = os.path.abspath(path).split('.')
+        _, ext = cls._split_path(path)
         return SUPPORTED_EXTENSIONS[ext].dump_content(data, **kwargs)
 
     @classmethod
