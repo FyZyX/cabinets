@@ -66,7 +66,7 @@ def set_configuration(protocol, **kwargs):
     return cabinet_cls.set_configuration(**kwargs)
 
 
-def read(uri: str, parser: Union[bool, Type[Parser]] = True, **kwargs):
+def read(uri: str, parser: Union[bool, Type[Parser]] = True, **kwargs: Any):
     """
     Read file contents.
 
@@ -74,7 +74,7 @@ def read(uri: str, parser: Union[bool, Type[Parser]] = True, **kwargs):
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
         parsing using given parser
-    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+    :param kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     :return Any: Parsed object read from file
     """
@@ -82,7 +82,8 @@ def read(uri: str, parser: Union[bool, Type[Parser]] = True, **kwargs):
     return cabinet_.read(path, parser=parser, **kwargs)
 
 
-def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True, **kwargs):
+def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True,
+           **kwargs: Any):
     """
     Create a file.
 
@@ -91,7 +92,7 @@ def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True, **k
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
         parsing using given parser
-    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+    :param kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     :return: None
     """
@@ -100,12 +101,12 @@ def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True, **k
     return cabinet_.create(path, content, parser=parser, **kwargs)
 
 
-def delete(uri: str, **kwargs):
+def delete(uri: str, **kwargs: Any):
     """
     Delete a file.
 
     :param str uri: Path to file including protocol identifier prefix (protocol://)
-    :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+    :param kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     """
     cabinet_, path = from_uri(uri)
