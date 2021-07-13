@@ -125,47 +125,55 @@ class TestTopLevelConfiguration(unittest.TestCase):
                          'AWS_SESSION_TOKEN': 'testing', })
 class TestS3CabinetNoRegion(unittest.TestCase):
 
+    def setUp(self) -> None:
+        self.client = None
+        self._bucket = 'mock-bucket'
+
+    def tearDown(self) -> None:
+        if self.client:
+            self.client.delete_bucket(Bucket=self._bucket)
+
     def test_set_configuration_region(self):
         self.assertIsNotNone(S3Cabinet.client)
 
     def test_read_create_s3_cabinet(self):
-        client = boto3.client('s3')
-        bucket = 'mock-bucket'
-        client.create_bucket(Bucket=bucket)
-        filename = f'{bucket}/test.yml'
+        self.client = boto3.client('s3')
+        self.client.create_bucket(Bucket=self._bucket)
+        filename = f'{self._bucket}/test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
         S3Cabinet.create(f'{filename}', data)
         result = S3Cabinet.read(f'{filename}')
-        S3Cabinet.delete(f'{filename}')
         self.assertDictEqual(data, result)
-        client.delete_bucket(Bucket=bucket)
+
+        # clean up file in mocked s3
+        S3Cabinet.delete(f'{filename}')
 
     def test_read_create(self):
-        client = boto3.client('s3')
-        bucket = 'mock-bucket'
-        client.create_bucket(Bucket=bucket)
-        protocol, filename = 's3', f'{bucket}/test.yml'
+        self.client = boto3.client('s3')
+        self.client.create_bucket(Bucket=self._bucket)
+        protocol, filename = 's3', f'{self._bucket}/test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
         cabinets.create(f'{protocol}://{filename}', data)
         result = cabinets.read(f'{protocol}://{filename}')
-        cabinets.delete(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
-        client.delete_bucket(Bucket=bucket)
+
+        # clean up file in mocked s3
+        cabinets.delete(f'{protocol}://{filename}')
 
     def test_read_create_with_different_region(self):
-        client = boto3.client('s3', 'us-east-2')
-        bucket = 'mock-bucket'
-        client.create_bucket(
-            Bucket=bucket,
+        self.client = boto3.client('s3', 'us-east-2')
+        self.client.create_bucket(
+            Bucket=self._bucket,
             CreateBucketConfiguration={'LocationConstraint': 'us-east-2'}
         )
-        protocol, filename = 's3', f'{bucket}/test.yml'
+        protocol, filename = 's3', f'{self._bucket}/test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
         cabinets.create(f'{protocol}://{filename}', data)
         result = cabinets.read(f'{protocol}://{filename}')
-        cabinets.delete(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
-        client.delete_bucket(Bucket=bucket)
+
+        # clean up file in mocked s3
+        cabinets.delete(f'{protocol}://{filename}')
 
 
 @mock_s3
@@ -176,58 +184,64 @@ class TestS3CabinetNoRegion(unittest.TestCase):
 class TestS3CabinetWithRegion(unittest.TestCase):
 
     def setUp(self) -> None:
+        self.client = None
+        self._bucket = 'mock-bucket'
         self._region = 'us-west-2'
         S3Cabinet.set_configuration(region_name=self._region)
+
+    def tearDown(self) -> None:
+        if self.client:
+            self.client.delete_bucket(Bucket=self._bucket)
 
     def test_set_configuration_region(self):
         self.assertIsNotNone(S3Cabinet.client)
         self.assertEqual(S3Cabinet.client.meta.region_name, self._region)
 
     def test_read_create_s3_cabinet(self):
-        client = boto3.client('s3', region_name=self._region)
-        bucket = 'mock-bucket'
-        client.create_bucket(
-            Bucket=bucket,
+        self.client = boto3.client('s3', region_name=self._region)
+        self.client.create_bucket(
+            Bucket=self._bucket,
             CreateBucketConfiguration={'LocationConstraint': self._region}
         )
-        filename = f'{bucket}/test.yml'
+        filename = f'{self._bucket}/test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
         S3Cabinet.create(f'{filename}', data)
         result = S3Cabinet.read(f'{filename}')
-        S3Cabinet.delete(f'{filename}')
         self.assertDictEqual(data, result)
-        client.delete_bucket(Bucket=bucket)
+
+        # clean up file in mocked s3
+        S3Cabinet.delete(f'{filename}')
 
     def test_read_create(self):
-        client = boto3.client('s3', region_name=self._region)
-        bucket = 'mock-bucket'
-        client.create_bucket(
-            Bucket=bucket,
+        self.client = boto3.client('s3', region_name=self._region)
+        self.client.create_bucket(
+            Bucket=self._bucket,
             CreateBucketConfiguration={'LocationConstraint': self._region}
         )
-        protocol, filename = 's3', f'{bucket}/test.yml'
+        protocol, filename = 's3', f'{self._bucket}/test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
         cabinets.create(f'{protocol}://{filename}', data)
         result = cabinets.read(f'{protocol}://{filename}')
-        cabinets.delete(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
-        client.delete_bucket(Bucket=bucket)
+
+        # clean up file in mocked s3
+        cabinets.delete(f'{protocol}://{filename}')
 
     def test_read_create_different_region(self):
         # still works since s3 is global
-        client = boto3.client('s3', region_name='us-west-1')
-        bucket = 'mock-bucket'
-        client.create_bucket(
-            Bucket=bucket,
+        self.client = boto3.client('s3', region_name='us-west-1')
+        self.client.create_bucket(
+            Bucket=self._bucket,
             CreateBucketConfiguration={'LocationConstraint': 'us-west-1'}
         )
-        protocol, filename = 's3', f'{bucket}/test.yml'
+        protocol, filename = 's3', f'{self._bucket}/test.yml'
         data = {'I': {'am': ['nested', 1, 'object', None]}}
         cabinets.create(f'{protocol}://{filename}', data)
         result = cabinets.read(f'{protocol}://{filename}')
-        cabinets.delete(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
-        client.delete_bucket(Bucket=bucket)
+
+        # clean up file in mocked s3
+        cabinets.delete(f'{protocol}://{filename}')
 
 
 class TestURI(unittest.TestCase):
