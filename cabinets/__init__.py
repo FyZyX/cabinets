@@ -1,5 +1,5 @@
 import os
-from pathlib import Path, PosixPath, WindowsPath, PurePath
+from pathlib import Path, PurePath
 from typing import Union, Type, Any
 
 from cabinets import plugins
