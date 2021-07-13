@@ -118,14 +118,11 @@ class TestTopLevelConfiguration(unittest.TestCase):
             cabinets.set_configuration('s4', region_name='us-west-2')
 
 
-@patch.dict(os.environ, {}, clear=True)
 @mock_s3
 class TestS3CabinetNoRegion(unittest.TestCase):
 
     def test_set_configuration_region(self):
         self.assertIsNotNone(S3Cabinet.client)
-        # default AWS region is us-east-1
-        self.assertEqual(S3Cabinet.client.meta.region_name, 'us-east-1')
 
     def test_read_create_s3_cabinet(self):
         client = boto3.client('s3')
@@ -182,7 +179,6 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         client.delete_bucket(Bucket=bucket)
 
 
-@patch.dict(os.environ, {}, clear=True)
 @mock_s3
 class TestS3CabinetWithRegion(unittest.TestCase):
 
