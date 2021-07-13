@@ -2,6 +2,7 @@ import json
 import os
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import boto3
 from moto import mock_s3
@@ -117,6 +118,7 @@ class TestTopLevelConfiguration(unittest.TestCase):
             cabinets.set_configuration('s4', region_name='us-west-2')
 
 
+@patch.dict(os.environ, {}, clear=True)
 @mock_s3
 class TestS3CabinetNoRegion(unittest.TestCase):
 
@@ -180,6 +182,7 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         client.delete_bucket(Bucket=bucket)
 
 
+@patch.dict(os.environ, {}, clear=True)
 @mock_s3
 class TestS3CabinetWithRegion(unittest.TestCase):
 
