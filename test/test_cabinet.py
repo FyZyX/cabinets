@@ -1,6 +1,7 @@
 import json
 import os
 import unittest
+import pathlib
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -103,6 +104,38 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
         with open(filename) as fh:
             data = fh.read()
         self.assertEqual(content, data)
+
+
+class TestFileCabinetWithPathObjects(fake_filesystem_unittest.TestCase):
+    fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
+
+    def setUp(self):
+        self.setUpPyfakefs()
+        self.fs.add_real_directory(self.fixture_path)
+
+    def test_read_json(self):
+        filename = os.path.join(self.fixture_path, 'sample.json')
+        path = pathlib.Path(filename)
+        data = cabinets.read(path)
+        self.assertEqual({'hello': 'world'}, data)
+
+    def test_create_json(self):
+        filename = 'tmp/sample.json'
+        path = pathlib.Path(filename)
+        cabinets.create(path, {'hello': 'world'})
+        with open(filename) as fh:
+            data = json.load(fh)
+        self.assertEqual({'hello': 'world'}, data)
+
+    def test_delete(self):
+        filename = 'delete-me.json'
+        path = pathlib.Path(filename)
+        data = {'hello': 'world'}
+        with open(path, 'w') as fh:
+            json.dump(data, fh)
+        self.assertTrue(path.exists())
+        cabinets.delete(path)
+        self.assertFalse(path.exists())
 
 
 @mock_s3
