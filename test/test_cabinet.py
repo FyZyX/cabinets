@@ -118,11 +118,11 @@ class TestTopLevelConfiguration(unittest.TestCase):
             cabinets.set_configuration('s4', region_name='us-west-2')
 
 
+@mock_s3
 @patch.dict(os.environ, {'AWS_ACCESS_KEY_ID': 'testing',
                          'AWS_SECRET_ACCESS_KEY': 'testing',
                          'AWS_SECURITY_TOKEN': 'testing',
                          'AWS_SESSION_TOKEN': 'testing', })
-@mock_s3
 class TestS3CabinetNoRegion(unittest.TestCase):
 
     def test_set_configuration_region(self):
@@ -183,11 +183,11 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         client.delete_bucket(Bucket=bucket)
 
 
+@mock_s3
 @patch.dict(os.environ, {'AWS_ACCESS_KEY_ID': 'testing',
                          'AWS_SECRET_ACCESS_KEY': 'testing',
                          'AWS_SECURITY_TOKEN': 'testing',
                          'AWS_SESSION_TOKEN': 'testing', })
-@mock_s3
 class TestS3CabinetWithRegion(unittest.TestCase):
 
     def setUp(self) -> None:
