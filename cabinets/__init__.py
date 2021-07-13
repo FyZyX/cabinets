@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Union, Type, Any
 
 from cabinets import plugins
@@ -39,7 +40,15 @@ class InvalidURIError(Exception):
     pass
 
 
-def from_uri(uri) -> (Cabinet, str):
+def from_uri(uri: Union[str, Path]) -> (Cabinet, str):
+    """
+
+    :param Union[str, Path] uri:
+    :return:
+    """
+    if isinstance(uri, Path):
+        uri = uri.as_uri()
+
     try:
         protocol, path = uri.split('://')
     except ValueError:
@@ -66,11 +75,13 @@ def set_configuration(protocol, **kwargs):
     return cabinet_cls.set_configuration(**kwargs)
 
 
-def read(uri: str, parser: Union[bool, Type[Parser]] = True, **kwargs: Any):
+def read(uri: Union[str, Path], parser: Union[bool, Type[Parser]] = True,
+         **kwargs: Any):
     """
     Read file contents.
 
-    :param str uri: Path to file including protocol identifier prefix (protocol://)
+    :param  Union[str, Path] uri: Path to file including protocol identifier prefix (
+        protocol://) or Path object
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
         parsing using given parser
@@ -82,12 +93,13 @@ def read(uri: str, parser: Union[bool, Type[Parser]] = True, **kwargs: Any):
     return cabinet_.read(path, parser=parser, **kwargs)
 
 
-def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True,
-           **kwargs: Any):
+def create(uri: Union[str, Path], content: Any,
+           parser: Union[bool, Type[Parser]] = True, **kwargs: Any):
     """
     Create a file.
 
-    :param str uri: Path to file including protocol identifier prefix (protocol://)
+    :param Union[str, Path] uri: Path to file including protocol identifier prefix (
+        protocol://) or Path object
     :param Any content: Content to write
     :param Union[bool, Type[Parser]] parser: `True` for parsing using default
         file extension Parser, `False` for no parsing, a `Parser` subclass for
@@ -101,11 +113,12 @@ def create(uri: str, content: Any, parser: Union[bool, Type[Parser]] = True,
     return cabinet_.create(path, content, parser=parser, **kwargs)
 
 
-def delete(uri: str, **kwargs: Any):
+def delete(uri: Union[str, Path], **kwargs: Any):
     """
     Delete a file.
 
-    :param str uri: Path to file including protocol identifier prefix (protocol://)
+    :param Union[str, Path] uri: Path to file including protocol identifier prefix (
+        protocol://) or Path object
     :param kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     """
