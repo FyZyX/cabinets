@@ -9,7 +9,12 @@ class S3Cabinet(Cabinet):
     client = None
 
     @classmethod
-    def set_configuration(cls, region_name='us-east-1', aws_access_key_id=None,
+    def _ensure_client_exists(cls):
+        if not cls.client:
+            cls.client = boto3.client('s3')
+
+    @classmethod
+    def set_configuration(cls, region_name=None, aws_access_key_id=None,
                           aws_secret_access_key=None, aws_session_token=None):
         cls.client = boto3.client('s3', region_name=region_name,
                                   aws_access_key_id=aws_access_key_id,
@@ -18,6 +23,8 @@ class S3Cabinet(Cabinet):
 
     @classmethod
     def read_content(cls, path, **kwargs) -> bytes:
+        cls._ensure_client_exists()
+
         bucket, *key = path.split('/')
         if not key:
             raise ValueError('S3 path needs bucket')
@@ -32,6 +39,8 @@ class S3Cabinet(Cabinet):
 
     @classmethod
     def create_content(cls, path, content, **kwargs):
+        cls._ensure_client_exists()
+
         bucket, *key = path.split('/')
         key = '/'.join(key)
         info(f"Uploading {key} to {bucket}")
@@ -44,6 +53,8 @@ class S3Cabinet(Cabinet):
 
     @classmethod
     def delete_content(cls, path, **kwargs):
+        cls._ensure_client_exists()
+
         bucket, *key = path.split('/')
         key = '/'.join(key)
         info(f"Deleting {key} from {bucket}")
