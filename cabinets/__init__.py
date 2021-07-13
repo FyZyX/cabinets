@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+from pathlib import Path, PosixPath, WindowsPath, PurePath
 from typing import Union, Type, Any
 
 from cabinets import plugins
@@ -41,13 +41,21 @@ class InvalidURIError(Exception):
 
 
 def from_uri(uri: Union[str, Path]) -> (Cabinet, str):
-    """
+    """Separate a URI string or Path object into a protocol and path
 
-    :param Union[str, Path] uri:
-    :return:
+    :param Union[str, Path] uri: String URI or Path object representing a file
+    :return: Cabinet class to use and path at which to find file using the Cabinet
+    :rtype: (Cabinet, str)
     """
-    if isinstance(uri, Path):
-        uri = uri.as_uri()
+    if isinstance(uri, PurePath):
+        # only standard Path objects have `resolve()`, however checking for
+        # Path instead of PurePath breaks testing with the `pyfakefs` library
+        # which mocks PosixPath and WindowsPath objects with library types
+        # which use a library type Path base class
+        try:
+            uri = uri.resolve().as_uri()
+        except AttributeError:
+            uri = uri.as_uri()
 
     try:
         protocol, path = uri.split('://')
