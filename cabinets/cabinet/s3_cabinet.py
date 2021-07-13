@@ -9,6 +9,11 @@ class S3Cabinet(Cabinet):
     client = None
 
     @classmethod
+    def _ensure_client_exists(cls):
+        if not cls.client:
+            cls.client = boto3.client('s3')
+
+    @classmethod
     def set_configuration(cls, region_name=None, aws_access_key_id=None,
                           aws_secret_access_key=None, aws_session_token=None):
         cls.client = boto3.client('s3', region_name=region_name,
@@ -18,8 +23,7 @@ class S3Cabinet(Cabinet):
 
     @classmethod
     def read_content(cls, path, **kwargs) -> bytes:
-        if not cls.client:
-            cls.client = boto3.client('s3')
+        cls._ensure_client_exists()
 
         bucket, *key = path.split('/')
         if not key:
@@ -35,8 +39,7 @@ class S3Cabinet(Cabinet):
 
     @classmethod
     def create_content(cls, path, content, **kwargs):
-        if not cls.client:
-            cls.client = boto3.client('s3')
+        cls._ensure_client_exists()
 
         bucket, *key = path.split('/')
         key = '/'.join(key)
@@ -50,8 +53,7 @@ class S3Cabinet(Cabinet):
 
     @classmethod
     def delete_content(cls, path, **kwargs):
-        if not cls.client:
-            cls.client = boto3.client('s3')
+        cls._ensure_client_exists()
 
         bucket, *key = path.split('/')
         key = '/'.join(key)
