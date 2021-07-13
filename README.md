@@ -299,7 +299,7 @@ This package is open source (see [LICENSE](LICENSE)), so please feel free
 to [contribute](https://opensource.guide/how-to-contribute/)
 by submitting a pull request, creating an issue, or contacting the authors directly.
 
-### Authors and Contributors:
+### Authors and Contributors
 
 - Lucas Lofaro *(Co-Author)*: [lucasmlofaro@gmail.com](mailto:lucasmlofaro@gmail.com)
 - Sam Hollenbach *(
