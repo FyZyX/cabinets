@@ -152,21 +152,6 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         self.assertDictEqual(data, result)
         client.delete_bucket(Bucket=bucket)
 
-    def test_read_create_with_default_region(self):
-        client = boto3.client('s3', 'us-east-2')
-        bucket = 'mock-bucket'
-        client.create_bucket(
-            Bucket=bucket,
-            CreateBucketConfiguration={'LocationConstraint': 'us-east-2'}
-        )
-        protocol, filename = 's3', f'{bucket}/test.yml'
-        data = {'I': {'am': ['nested', 1, 'object', None]}}
-        cabinets.create(f'{protocol}://{filename}', data)
-        result = cabinets.read(f'{protocol}://{filename}')
-        cabinets.delete(f'{protocol}://{filename}')
-        self.assertDictEqual(data, result)
-        client.delete_bucket(Bucket=bucket)
-
     def test_read_create_with_different_region(self):
         client = boto3.client('s3', 'us-east-2')
         bucket = 'mock-bucket'
