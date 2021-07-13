@@ -12,6 +12,22 @@ automatic serialization and deserialization of Python objects.
 format parsers natively, and new protocols or parsers can be
 easily [registered](#custom-protocols-and-parsers).
 
+## Table of contents
+
+- [Sample Usage](#sample-usage)
+    - [Read a file](#read-a-file)
+    - [Write a file](#write-a-file)
+    - [Reading and Writing with Other Protocols](#reading-and-writing-with-other-protocols)
+- [Built-in Protocols and Parsers](#built-in-protocols-and-parsers)
+    - [Protocols](#protocols)
+    - [Parsers](#parsers)
+- [Protocol Configuration](#protocol-configuration)
+- [Custom Protocols and Parsers](#custom-protocols-and-parsers)
+    - [Adding Cabinets](#adding-cabinets)
+    - [Adding Parsers](#adding-parsers)
+    - [Loading Plugins](#loading-plugins)
+- [Contributing](#contributing)
+
 ## Sample Usage
 
 ### Read a file
@@ -55,11 +71,11 @@ assert new_obj == obj
 
 ### Reading and Writing with Other Protocols
 
-Using `cabinets` allows you to interact with multiple file storage protocols
-depending on the URI you specify. In the previous examples, we used
+Using `cabinets` allows you to interact with multiple file storage protocols depending
+on the URI you specify. In the previous examples, we used
 `read()` and `write()` to operate within our local file system; that's
-because `cabinets` assumes we're using the `file://` protocol by default.
-Luckily, accessing other storage systems is just as easy!
+because `cabinets` assumes we're using the `file://` protocol by default. Luckily,
+accessing other storage systems is just as easy!
 
 For example, operating on a file on AWS S3 is done exactly the same way:
 
@@ -118,9 +134,9 @@ s3_foo_data = cabinets.read('s3://test.foo')
 
 ## Protocol Configuration
 
-Some storage platform protocols may require additional configuration parameters to be set
-before they can be used. Each `Cabinet` subclass can expose a `set_configuration(**config)`
-class method to take care of any required initial setup.
+Some storage platform protocols may require additional configuration parameters to be
+set before they can be used. Each `Cabinet` subclass can expose
+a `set_configuration(**config)` class method to take care of any required initial setup.
 
 ```python
 from cabinets.cabinet.s3_cabinet import S3Cabinet
@@ -141,7 +157,7 @@ are available.
 
 Additionally, there is a top-level `set_configuration()` function so that importing
 specific `Cabinet` subclasses is not required. Simply pass the desired protocol as the
-first argument. 
+first argument.
 
 ```python
 import cabinets
@@ -204,8 +220,8 @@ from ... import FooCabinet  # ensure FooCabinet is loaded
 cabinets.read('foo://example.json')
 ```
 
-The first call that occurs will be `FooCabinet.read_content('foo.json)`, and that
-result is then parsed by the `JSONParser` before being returned.
+The first call that occurs will be `FooCabinet.read_content('foo.json)`, and that result
+is then parsed by the `JSONParser` before being returned.
 
 > **NOTE**: In order for the protocols to be registered, the class definition must be
 > run at least once. Make sure the modules where your custom `Cabinet` classes are defined
@@ -252,17 +268,16 @@ and should return a Python object from your `Foo` cabinet, using your `Bar` pars
 
 As mentioned in the example above, your custom `Cabinet` and `Parser` classes must be
 executed in order to be added to the internal cache `cabinets` uses for protocol and
-extension lookup. If your custom classes are imported before any `cabinets` functions are
-use then, this won't be an issue. However, in many use cases there is no reason to
+extension lookup. If your custom classes are imported before any `cabinets` functions
+are use then, this won't be an issue. However, in many use cases there is no reason to
 import those classes aside from usage with `cabinets` functions. Instead of requiring
 each class to be imported manually at the start of your program,
 `cabinets` can search a specified path for new `Cabinet` and `Parser` classes, and load
 them automatically.
 
-Specifying the `PLUGIN_PATH` environment variable will cause `cabinets` to search
-for subdirectories called `cabinet` and `parser` in that path. Modules residing
-within those directories will be searched for `Cabinet` and `Parser` subclasses
-respectively.
+Specifying the `PLUGIN_PATH` environment variable will cause `cabinets` to search for
+subdirectories called `cabinet` and `parser` in that path. Modules residing within those
+directories will be searched for `Cabinet` and `Parser` subclasses respectively.
 
 ```
 └─ PLUGIN_PATH
@@ -275,8 +290,8 @@ respectively.
 ```
 
 If the above `FooCabinet` and `BarParser` classes are placed in `foo_cabinet.py`
-and `bar_parser.py`, they will be loaded and registered to their specified
-cache without needing to be referenced anywhere else in the program.
+and `bar_parser.py`, they will be loaded and registered to their specified cache without
+needing to be referenced anywhere else in the program.
 
 ## Contributing
 
@@ -284,7 +299,8 @@ This package is open source (see [LICENSE](LICENSE)), so please feel free
 to [contribute](https://opensource.guide/how-to-contribute/)
 by submitting a pull request, creating an issue, or contacting the authors directly.
 
-### Authors and Contributors:
+### Authors and Contributors
 
 - Lucas Lofaro *(Co-Author)*: [lucasmlofaro@gmail.com](mailto:lucasmlofaro@gmail.com)
-- Sam Hollenbach *(Co-Author)*: [samhollenbach@gmail.com](mailto:samhollenbach@gmail.com) 
+- Sam Hollenbach *(
+  Co-Author)*: [samhollenbach@gmail.com](mailto:samhollenbach@gmail.com) 
