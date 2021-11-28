@@ -70,6 +70,9 @@ class Cabinet(ABC):
         """
         cabinet_kwargs, parser_kwargs = _separate_kwargs(**kwargs)
         content = cls.read_content(path, **cabinet_kwargs)
+        if not isinstance(content, bytes):
+            raise ValueError("Content must have type `bytes`")
+
         if parser is True:
             return Parser.load(path, content, **parser_kwargs)
         elif parser is False:
