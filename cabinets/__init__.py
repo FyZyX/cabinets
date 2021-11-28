@@ -57,11 +57,15 @@ def from_uri(uri: Union[str, Path]) -> (Cabinet, str):
         except AttributeError:
             uri = uri.as_uri()
 
-    try:
-        protocol, path = uri.split('://')
-    except ValueError:
+    parts = uri.split('://')
+    if len(parts) < 2:
         debug("No cabinet protocol identifier specified: using 'file'")
         protocol, path = 'file', uri
+    elif len(parts) > 2:
+        raise InvalidURIError("Must specify a single protocol separator '://'")
+    else:
+        protocol, path = parts
+
     cabinet_ = SUPPORTED_PROTOCOLS.get(protocol)
     if not cabinet_:
         raise InvalidURIError(f"Unknown protocol '{protocol}'")
