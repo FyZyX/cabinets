@@ -42,6 +42,8 @@ class Parser(ABC):
 
     @classmethod
     def load(cls, path, content: bytes, **kwargs):
+        if not isinstance(content, bytes):
+            raise ValueError("Content must have type `bytes`")
         _, ext = cls._split_path(path)
         return SUPPORTED_EXTENSIONS[ext].load_content(content, **kwargs)
 
