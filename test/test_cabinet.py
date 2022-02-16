@@ -295,6 +295,11 @@ class TestURI(unittest.TestCase):
         with self.assertRaises(InvalidURIError):
             cabinets.from_uri(uri)
 
+    def test_cabinet_from_uri_fails_on_multiple_protocol_separators(self):
+        uri = 'file://path/to/file://path/to/another/file'
+        with self.assertRaises(InvalidURIError):
+            cabinets.from_uri(uri)
+
 
 if __name__ == '__main__':
     unittest.main()

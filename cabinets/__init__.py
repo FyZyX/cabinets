@@ -40,12 +40,12 @@ class InvalidURIError(Exception):
     pass
 
 
-def from_uri(uri: Union[str, Path]) -> (Cabinet, str):
+def _parse_protocol(uri: Union[str, Path]) -> (Cabinet, str):
     """Separate a URI string or Path object into a protocol and path
 
     :param Union[str, Path] uri: String URI or Path object representing a file
-    :return: Cabinet class to use and path at which to find file using the Cabinet
-    :rtype: (Cabinet, str)
+    :return: Protocol to use for reading the file and its associated path
+    :rtype: (str, str)
     """
     if isinstance(uri, PurePath):
         # only standard Path objects have `resolve()`, however checking for
@@ -57,11 +57,27 @@ def from_uri(uri: Union[str, Path]) -> (Cabinet, str):
         except AttributeError:
             uri = uri.as_uri()
 
-    try:
-        protocol, path = uri.split('://')
-    except ValueError:
+    parts = uri.split('://')
+    if len(parts) < 2:
         debug("No cabinet protocol identifier specified: using 'file'")
         protocol, path = 'file', uri
+    elif len(parts) > 2:
+        raise InvalidURIError("Must specify a single protocol separator '://'")
+    else:
+        protocol, path = parts
+
+    return protocol, path
+
+
+def from_uri(uri: Union[str, Path]) -> (Cabinet, str):
+    """Creates a Cabinet instance from a URI or Path
+
+    :param Union[str, Path] uri: String URI or Path object representing a file
+    :return: Cabinet class to use and path at which to find file using the Cabinet
+    :rtype: (Cabinet, str)
+    """
+    protocol, path = _parse_protocol(uri)
+
     cabinet_ = SUPPORTED_PROTOCOLS.get(protocol)
     if not cabinet_:
         raise InvalidURIError(f"Unknown protocol '{protocol}'")
