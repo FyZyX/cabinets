@@ -1,6 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
-from typing import Union, Type, Any
+from typing import Union, Type, Any, List
 
 from cabinets.parser import Parser
 
@@ -121,6 +121,17 @@ class Cabinet(ABC):
             methods
         """
         cls.delete_content(path, **kwargs)
+
+    @classmethod
+    def ls(cls, directory: str, **kwargs)  -> List[str]:
+        """
+        List all files in a directory using a specific protocol.
+
+        :param str path: Path to file within cabinet
+        :param dict kwargs: Extra keyword arguments for `Cabinet` subclass methods
+        :return List[str]: List of filenames in directory
+        """
+        pass  # pragma: no cover
 
     @classmethod
     @abstractmethod

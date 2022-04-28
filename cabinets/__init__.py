@@ -148,3 +148,16 @@ def delete(uri: Union[str, Path], **kwargs: Any):
     """
     cabinet_, path = from_uri(uri)
     return cabinet_.delete(path, **kwargs)
+
+
+def ls(directory_uri: Union[str, Path], **kwargs: Any):
+    """
+    Delete a file.
+
+    :param Union[str, Path] uri: Path to directory including protocol identifier prefix
+        (protocol://) or Path object
+    :param kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
+        methods
+    """
+    cabinet_, dir = from_uri(directory_uri)
+    return cabinet_.ls(dir, **kwargs)

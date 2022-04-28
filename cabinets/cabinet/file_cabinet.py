@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from cabinets.cabinet import register_protocols, Cabinet
 
@@ -23,3 +24,7 @@ class FileCabinet(Cabinet):
     @classmethod
     def delete_content(cls, path, **kwargs):
         os.remove(os.path.normpath(path))
+
+    @classmethod
+    def ls(cls, directory: str, **kwargs) -> List[str]:
+        return os.listdir(directory)
