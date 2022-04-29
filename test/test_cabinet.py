@@ -112,6 +112,9 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
         self.assertCountEqual(
             cabinets.ls(os.path.join(self.fixture_path, 'example', 'subdir')),
             ['test3.txt'])
+
+        # make an empty subdirectory
+        os.makedirs(os.path.join(self.fixture_path, 'example', 'empty_subdir'))
         self.assertCountEqual(
             cabinets.ls(os.path.join(self.fixture_path, 'example', 'empty_subdir')),
             [])
