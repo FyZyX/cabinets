@@ -73,7 +73,7 @@ assert new_obj == obj
 ### List files in a directory
 
 In some situations, you may need to know what files are in a directory before doing 
-any operations. `cabinets` also provides an `ls` function to assist with this.
+any operations. `cabinets` also provides an `list` function to assist with this.
 
 ```python
 import cabinets
