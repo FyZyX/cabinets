@@ -106,13 +106,13 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
         self.assertEqual(content, data)
 
     def test_ls(self):
-        self.assertListEqual(
+        self.assertCountEqual(
             cabinets.ls(os.path.join(self.fixture_path, 'example')),
             ['test.json', 'test2.yaml'])
-        self.assertListEqual(
+        self.assertCountEqual(
             cabinets.ls(os.path.join(self.fixture_path, 'example', 'subdir')),
             ['test3.txt'])
-        self.assertListEqual(
+        self.assertCountEqual(
             cabinets.ls(os.path.join(self.fixture_path, 'example', 'empty_subdir')),
             [])
 
@@ -225,7 +225,7 @@ class TestS3CabinetNoRegion(unittest.TestCase):
             self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
 
         listed_files = cabinets.ls(f's3://{self._bucket}')
-        self.assertListEqual(listed_files, files)
+        self.assertCountEqual(listed_files, files)
 
     def test_ls_bucket_level_with_subdir(self):
         self.client = boto3.client('s3', 'us-east-2')
@@ -238,7 +238,7 @@ class TestS3CabinetNoRegion(unittest.TestCase):
             self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
 
         listed_files = cabinets.ls(f's3://{self._bucket}')
-        self.assertListEqual(listed_files, ['file1.txt', 'file2.yml'])
+        self.assertCountEqual(listed_files, ['file1.txt', 'file2.yml'])
 
     def test_ls_subdir_level(self):
         self.client = boto3.client('s3', 'us-east-2')
@@ -252,7 +252,7 @@ class TestS3CabinetNoRegion(unittest.TestCase):
             self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
 
         listed_files = cabinets.ls(f's3://{self._bucket}/subdir')
-        self.assertListEqual(listed_files, ['file2.txt', 'file3'])
+        self.assertCountEqual(listed_files, ['file2.txt', 'file3'])
 
 
 @mock_s3
