@@ -178,7 +178,7 @@ class TestS3CabinetNoRegion(unittest.TestCase):
 
     def tearDown(self) -> None:
         if self.client:
-            response = self.client.list_objects(Bucket=self._bucket)
+            response = self.client.list_objects_v2(Bucket=self._bucket)
             for content in response.get('Contents', []):
                 key = content.get('Key')
                 self.client.delete_object(Bucket=self._bucket, Key=key)

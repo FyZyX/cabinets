@@ -75,7 +75,7 @@ class S3Cabinet(Cabinet):
         dir = '/'.join(dir)
 
         files = []
-        response = cls.client.list_objects(Bucket=bucket, Prefix=dir)
+        response = cls.client.list_objects_v2(Bucket=bucket, Prefix=dir)
 
         # ensure dir ends in slash for prefix stripping
         if not dir.endswith('/'):
