@@ -125,7 +125,8 @@ class Cabinet(ABC):
     @classmethod
     def ls(cls, directory: str, **kwargs) -> List[str]:
         """
-        List all files in a directory using a specific protocol.
+        List all files in a directory using a specific protocol. This method will
+        not list folders (subdirectories), only files.
 
         :param str path: Path to file within cabinet
         :param dict kwargs: Extra keyword arguments for `Cabinet` subclass methods
