@@ -88,9 +88,9 @@ assert cabinets.list('example/subdir/') == ['test3.txt']
 
 ```
 
-> **Important:** For simplicity, `cabinets` restricts the output of `ls` to **only file types**. 
+> **Important:** For simplicity, `cabinets` restricts the output of `list` to **only file types**. 
 > Subdirectories are excluded, and must be queried separately. 
-> Future versions may include a flag in `ls` for returning subdirectories as well. 
+> Future versions may include a flag in `list` for returning subdirectories as well. 
 
 
 ### Reading and Writing with Other Protocols
