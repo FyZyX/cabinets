@@ -76,8 +76,15 @@ class S3Cabinet(Cabinet):
 
         files = []
         response = cls.client.list_objects(Bucket=bucket, Prefix=dir)
+
+        # ensure dir ends in slash for prefix stripping
+        if not dir.endswith('/'):
+            dir += '/'
+
         for content in response.get('Contents', []):
-            file = content.get('Key')
+            file: str = content.get('Key')
+            # strip directory prefix
+            file = file.lstrip(dir)
             # ignore subdirectory files
             if delimiter in file:
                 continue
