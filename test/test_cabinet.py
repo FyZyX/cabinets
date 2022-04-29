@@ -221,7 +221,6 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         listed_files = cabinets.ls(f's3://{self._bucket}')
         self.assertListEqual(listed_files, files)
 
-
         for file in files:
             # clean up file in mocked s3
             cabinets.delete(f's3://{self._bucket}/{file}')
@@ -236,15 +235,29 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         for file in files:
             self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
 
-
         listed_files = cabinets.ls(f's3://{self._bucket}')
         self.assertListEqual(listed_files, ['file1.txt', 'file2.yml'])
-
 
         for file in files:
             # clean up file in mocked s3
             cabinets.delete(f's3://{self._bucket}/{file}')
 
+    def test_ls_subdir_level(self):
+        self.client = boto3.client('s3', 'us-east-2')
+        self.client.create_bucket(
+            Bucket=self._bucket,
+            CreateBucketConfiguration={'LocationConstraint': 'us-east-2'}
+        )
+        files = ['file1.txt', 'subdir/file2.txt', 'subdir/file3']
+        for file in files:
+            self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
+
+        listed_files = cabinets.ls(f's3://{self._bucket}/subdir')
+        self.assertListEqual(listed_files, ['subdir/file2.txt', 'subdir/file3'])
+
+        for file in files:
+            # clean up file in mocked s3
+            cabinets.delete(f's3://{self._bucket}/{file}')
 
 
 @mock_s3
