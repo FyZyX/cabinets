@@ -123,7 +123,7 @@ class Cabinet(ABC):
         cls.delete_content(path, **kwargs)
 
     @classmethod
-    def ls(cls, directory: str, **kwargs)  -> List[str]:
+    def ls(cls, directory: str, **kwargs) -> List[str]:
         """
         List all files in a directory using a specific protocol.
 
