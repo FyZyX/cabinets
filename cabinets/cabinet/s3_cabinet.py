@@ -68,7 +68,7 @@ class S3Cabinet(Cabinet):
             return False
 
     @classmethod
-    def ls(cls, directory: str, delimiter: str = '/', **kwargs) -> List[str]:
+    def list(cls, directory: str, delimiter: str = '/', **kwargs) -> List[str]:
         cls._ensure_client_exists()
 
         bucket, *dir = directory.split(delimiter)

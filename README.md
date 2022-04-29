@@ -83,8 +83,8 @@ cabinets.create('example/test.json', obj)
 cabinets.create('example/test2.yaml', obj)
 cabinets.create('example/subdir/test3.txt', "test")
 
-assert cabinets.ls('example/') == ['test.json', 'test2.yaml']  
-assert cabinets.ls('example/subdir/') == ['test3.txt']  
+assert cabinets.list('example/') == ['test.json', 'test2.yaml']
+assert cabinets.list('example/subdir/') == ['test3.txt']
 
 ```
 

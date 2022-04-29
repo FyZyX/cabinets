@@ -1,6 +1,6 @@
 import os
 from pathlib import Path, PurePath
-from typing import Union, Type, Any
+from typing import Union, Type, Any, List
 
 from cabinets import plugins
 from cabinets.cabinet import (
@@ -150,14 +150,15 @@ def delete(uri: Union[str, Path], **kwargs: Any):
     return cabinet_.delete(path, **kwargs)
 
 
-def ls(directory_uri: Union[str, Path], **kwargs: Any):
+def list(directory_uri: Union[str, Path], **kwargs: Any) -> List[str]:
     """
-    Delete a file.
+    List files in a directory. Will not include subdirectories.
 
     :param Union[str, Path] uri: Path to directory including protocol identifier prefix
         (protocol://) or Path object
     :param kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
+    :return List[str]: List of filenames in directory
     """
     cabinet_, dir = from_uri(directory_uri)
-    return cabinet_.ls(dir, **kwargs)
+    return cabinet_.list(dir, **kwargs)
