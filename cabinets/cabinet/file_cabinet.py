@@ -27,4 +27,5 @@ class FileCabinet(Cabinet):
 
     @classmethod
     def ls(cls, directory: str, **kwargs) -> List[str]:
-        return os.listdir(directory)
+        return [f for f in os.listdir(directory) if
+                os.path.isfile(os.path.join(directory, f))]
