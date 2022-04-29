@@ -1,3 +1,5 @@
+from typing import List
+
 import boto3
 
 from cabinets.cabinet import register_protocols, Cabinet
@@ -64,3 +66,28 @@ class S3Cabinet(Cabinet):
         except Exception as ex:
             error(f"Cannot delete {path} from S3 Bucket '{bucket}': {ex}")
             return False
+
+    @classmethod
+    def list(cls, directory, delimiter: str = '/', **kwargs) -> List[str]:
+        cls._ensure_client_exists()
+
+        bucket, *dir = directory.split(delimiter)
+        dir = '/'.join(dir)
+
+        files = []
+        response = cls.client.list_objects_v2(Bucket=bucket, Prefix=dir)
+
+        # ensure dir ends in slash for prefix stripping
+        if not dir.endswith('/'):
+            dir += '/'
+
+        for content in response.get('Contents', []):
+            file: str = content.get('Key')
+            # strip directory prefix
+            file = file.lstrip(dir)
+            # ignore subdirectory files
+            if delimiter in file:
+                continue
+            files.append(file)
+
+        return files

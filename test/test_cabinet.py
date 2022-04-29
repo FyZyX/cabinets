@@ -105,6 +105,20 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
             data = fh.read()
         self.assertEqual(content, data)
 
+    def test_list(self):
+        self.assertCountEqual(
+            cabinets.list(os.path.join(self.fixture_path, 'example')),
+            ['test.json', 'test2.yaml'])
+        self.assertCountEqual(
+            cabinets.list(os.path.join(self.fixture_path, 'example', 'subdir')),
+            ['test3.txt'])
+
+        # make an empty subdirectory
+        os.makedirs(os.path.join(self.fixture_path, 'example', 'empty_subdir'))
+        self.assertCountEqual(
+            cabinets.list(os.path.join(self.fixture_path, 'example', 'empty_subdir')),
+            [])
+
 
 class TestFileCabinetWithPathObjects(fake_filesystem_unittest.TestCase):
     fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -164,6 +178,10 @@ class TestS3CabinetNoRegion(unittest.TestCase):
 
     def tearDown(self) -> None:
         if self.client:
+            response = self.client.list_objects_v2(Bucket=self._bucket)
+            for content in response.get('Contents', []):
+                key = content.get('Key')
+                self.client.delete_object(Bucket=self._bucket, Key=key)
             self.client.delete_bucket(Bucket=self._bucket)
 
     def test_set_configuration_region(self):
@@ -178,9 +196,6 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         result = S3Cabinet.read(f'{filename}')
         self.assertDictEqual(data, result)
 
-        # clean up file in mocked s3
-        S3Cabinet.delete(f'{filename}')
-
     def test_read_create(self):
         self.client = boto3.client('s3')
         self.client.create_bucket(Bucket=self._bucket)
@@ -189,9 +204,6 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         cabinets.create(f'{protocol}://{filename}', data)
         result = cabinets.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
-
-        # clean up file in mocked s3
-        cabinets.delete(f'{protocol}://{filename}')
 
     def test_read_create_with_different_region(self):
         self.client = boto3.client('s3', 'us-east-2')
@@ -205,8 +217,45 @@ class TestS3CabinetNoRegion(unittest.TestCase):
         result = cabinets.read(f'{protocol}://{filename}')
         self.assertDictEqual(data, result)
 
-        # clean up file in mocked s3
-        cabinets.delete(f'{protocol}://{filename}')
+    def test_list_bucket_level(self):
+        self.client = boto3.client('s3', 'us-east-2')
+        self.client.create_bucket(
+            Bucket=self._bucket,
+            CreateBucketConfiguration={'LocationConstraint': 'us-east-2'}
+        )
+        files = ['file1.txt', 'file2.yml', 'file3']
+        for file in files:
+            self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
+
+        listed_files = cabinets.list(f's3://{self._bucket}')
+        self.assertCountEqual(listed_files, files)
+
+    def test_list_bucket_level_with_subdir(self):
+        self.client = boto3.client('s3', 'us-east-2')
+        self.client.create_bucket(
+            Bucket=self._bucket,
+            CreateBucketConfiguration={'LocationConstraint': 'us-east-2'}
+        )
+        files = ['file1.txt', 'file2.yml', 'subdir/file3.txt']
+        for file in files:
+            self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
+
+        listed_files = cabinets.list(f's3://{self._bucket}')
+        self.assertCountEqual(listed_files, ['file1.txt', 'file2.yml'])
+
+    def test_list_subdir_level(self):
+        self.client = boto3.client('s3', 'us-east-2')
+        self.client.create_bucket(
+            Bucket=self._bucket,
+            CreateBucketConfiguration={'LocationConstraint': 'us-east-2'}
+        )
+        files = ['file1.txt', 'subdir/file2.txt', 'subdir/file3',
+                 'subdir/subdir2/file4']
+        for file in files:
+            self.client.put_object(Bucket=self._bucket, Key=file, Body='abcd'.encode())
+
+        listed_files = cabinets.list(f's3://{self._bucket}/subdir')
+        self.assertCountEqual(listed_files, ['file2.txt', 'file3'])
 
 
 @mock_s3

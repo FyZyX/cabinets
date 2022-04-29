@@ -7,7 +7,8 @@ requirements = (
 )
 
 tests_requirements = (
-    'moto==1.3.14',
+    'moto==3.0.7',
+    'nose',
     'pyfakefs',
     'pytest',
     'pytest-cov'
@@ -40,6 +41,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ),
     license='GNU GPLv3+',
     python_requires='>=3.6',

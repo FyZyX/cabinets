@@ -17,6 +17,7 @@ easily [registered](#custom-protocols-and-parsers).
 - [Sample Usage](#sample-usage)
     - [Read a file](#read-a-file)
     - [Write a file](#write-a-file)
+    - [List files in a directory](#list-files-in-a-directory)
     - [Reading and Writing with Other Protocols](#reading-and-writing-with-other-protocols)
 - [Built-in Protocols and Parsers](#built-in-protocols-and-parsers)
     - [Protocols](#protocols)
@@ -68,6 +69,29 @@ new_obj = cabinets.read('test.json')
 
 assert new_obj == obj
 ```
+
+### List files in a directory
+
+In some situations, you may need to know what files are in a directory before doing 
+any operations. `cabinets` also provides an `list` function to assist with this.
+
+```python
+import cabinets
+
+obj = {'test': 1}
+cabinets.create('example/test.json', obj)
+cabinets.create('example/test2.yaml', obj)
+cabinets.create('example/subdir/test3.txt', "test")
+
+assert cabinets.list('example/') == ['test.json', 'test2.yaml']
+assert cabinets.list('example/subdir/') == ['test3.txt']
+
+```
+
+> **Important:** For simplicity, `cabinets` restricts the output of `list` to **only file types**. 
+> Subdirectories are excluded, and must be queried separately. 
+> Future versions may include a flag in `list` for returning subdirectories as well. 
+
 
 ### Reading and Writing with Other Protocols
 
@@ -162,7 +186,7 @@ first argument.
 ```python
 import cabinets
 
-# set the AWS S3 region to us-west-2 and specify an access key
+# *OPTIONAL*: set the AWS S3 region to us-west-2 and specify an access key
 cabinets.set_configuration('s3', region_name='us-west-2', aws_access_key_id=...)
 
 # use generic Cabinet with protocol prefix
