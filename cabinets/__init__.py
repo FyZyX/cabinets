@@ -154,8 +154,8 @@ def list(directory_uri: Union[str, Path], **kwargs: Any) -> List[str]:
     """
     List files in a directory. Will not include subdirectories.
 
-    :param Union[str, Path] uri: Path to directory including protocol identifier prefix
-        (protocol://) or Path object
+    :param Union[str, Path] directory_uri: Path to directory including protocol
+        identifier prefix (protocol://) or Path object
     :param kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
         methods
     :return List[str]: List of filenames in directory

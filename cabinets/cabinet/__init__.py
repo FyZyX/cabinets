@@ -1,5 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Union, Type, Any, List
 
 from cabinets.parser import Parser
@@ -56,11 +57,12 @@ class Cabinet(ABC):
         pass  # pragma: no cover
 
     @classmethod
-    def read(cls, path: str, parser: Union[bool, Type[Parser]] = True, **kwargs) -> Any:
+    def read(cls, path: Union[str, Path], parser: Union[bool, Type[Parser]] = True,
+             **kwargs) -> Any:
         """
         Read file contents using a specific protocol.
 
-        :param str path: Path to file within cabinet
+        :param Union[str, Path] path: Path to file within cabinet
         :param Union[bool, Type[Parser]] parser: `True` for parsing using default
             file extension Parser, `False` for no parsing, a `Parser` subclass for
             parsing using given parser
@@ -84,12 +86,12 @@ class Cabinet(ABC):
                 'Argument `parser` must be `True`, `False` or a `Parser` subclass')
 
     @classmethod
-    def create(cls, path: str, content: Any, parser: Union[bool, Type[Parser]] = True,
-               **kwargs):
+    def create(cls, path: Union[str, Path], content: Any,
+               parser: Union[bool, Type[Parser]] = True, **kwargs):
         """
         Create a file using a specific protocol.
 
-        :param str path: Path to file within cabinet
+        :param Union[str, Path] path: Path to file within cabinet
         :param Any content: Content to write
         :param Union[bool, Type[Parser]] parser: `True` for parsing using default
             file extension Parser, `False` for no parsing, a `Parser` subclass for
@@ -112,23 +114,23 @@ class Cabinet(ABC):
         return cls.create_content(path, payload, **cabinet_kwargs)
 
     @classmethod
-    def delete(cls, path: str, **kwargs):
+    def delete(cls, path: Union[str, Path], **kwargs):
         """
         Delete a file using a specific protocol.
 
-        :param str path: Path to file within cabinet
+        :param Union[str, Path] path: Path to file within cabinet
         :param dict kwargs: Extra keyword arguments for `Cabinet` or `Parser` subclass
             methods
         """
         cls.delete_content(path, **kwargs)
 
     @classmethod
-    def list(cls, directory: str, **kwargs) -> List[str]:
+    def list(cls, directory: Union[str, Path], **kwargs) -> List[str]:
         """
         List all files in a directory using a specific protocol. This method will
         not list folders (subdirectories), only files.
 
-        :param str path: Path to file within cabinet
+        :param Union[str, Path] path: Path to file within cabinet
         :param dict kwargs: Extra keyword arguments for `Cabinet` subclass methods
         :return List[str]: List of filenames in directory
         """
