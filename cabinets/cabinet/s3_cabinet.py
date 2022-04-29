@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 import boto3
 
@@ -67,18 +67,20 @@ class S3Cabinet(Cabinet):
             error(f"Cannot delete {path} from S3 Bucket '{bucket}': {ex}")
             return False
 
-
     @classmethod
-    def ls(cls, directory: str, **kwargs) -> List[str]:
+    def ls(cls, directory: str, delimiter: str = '/', **kwargs) -> List[str]:
         cls._ensure_client_exists()
 
-        bucket, *dir = directory.split('/')
+        bucket, *dir = directory.split(delimiter)
         dir = '/'.join(dir)
 
         files = []
         response = cls.client.list_objects(Bucket=bucket, Prefix=dir)
         for content in response.get('Contents', []):
             file = content.get('Key')
+            # ignore subdirectory files
+            if delimiter in file:
+                continue
             files.append(file)
 
         return files
