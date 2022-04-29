@@ -105,6 +105,17 @@ class TestFileCabinet(fake_filesystem_unittest.TestCase):
             data = fh.read()
         self.assertEqual(content, data)
 
+    def test_ls(self):
+        self.assertListEqual(
+            cabinets.ls(os.path.join(self.fixture_path, 'example')),
+            ['test.json', 'test2.yaml'])
+        self.assertListEqual(
+            cabinets.ls(os.path.join(self.fixture_path, 'example', 'subdir')),
+            ['test3.txt'])
+        self.assertListEqual(
+            cabinets.ls(os.path.join(self.fixture_path, 'example', 'empty_subdir')),
+            [])
+
 
 class TestFileCabinetWithPathObjects(fake_filesystem_unittest.TestCase):
     fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
