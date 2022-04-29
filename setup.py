@@ -7,7 +7,8 @@ requirements = (
 )
 
 tests_requirements = (
-    'moto==1.3.14',
+    'moto==3.0.7',
+    'nose',
     'pyfakefs',
     'pytest',
     'pytest-cov'
