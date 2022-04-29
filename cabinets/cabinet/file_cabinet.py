@@ -26,6 +26,6 @@ class FileCabinet(Cabinet):
         os.remove(os.path.normpath(path))
 
     @classmethod
-    def list(cls, directory: str, **kwargs) -> List[str]:
+    def list(cls, directory, **kwargs) -> List[str]:
         return [f for f in os.listdir(directory) if
                 os.path.isfile(os.path.join(directory, f))]
